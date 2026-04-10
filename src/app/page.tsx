@@ -17,7 +17,7 @@ import TvHeroCarousel from '@/components/tv-hero-carousel';
 import AdvertiseBanner from '@/components/advertise-banner';
 
 
-export const revalidate = 3600; // Revalidate every hour
+// edge runtime дээр revalidate ажилладаггүй тул устгасан
 
 export default async function Home({
   searchParams,

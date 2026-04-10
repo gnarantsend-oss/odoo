@@ -24,7 +24,7 @@ async function tmdbFetch(endpoint: string, params: Record<string, string> = {}) 
     Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
 
     try {
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), { cf: { cacheTtl: 3600, cacheEverything: true } } as any);
         if (!response.ok) {
         console.error(`TMDB API Error: ${response.statusText}`);
         return { results: [] };
@@ -50,7 +50,7 @@ export async function fetchMovieById(id: number): Promise<Movie | null> {
     url.searchParams.append('api_key', TMDB_API_KEY);
 
     try {
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), { cf: { cacheTtl: 3600, cacheEverything: true } } as any);
         if (!response.ok) {
             console.error(`TMDB API Error fetching movie by id: ${response.statusText}`);
             return null;
@@ -72,7 +72,7 @@ export async function fetchTVShowById(id: number): Promise<TVShow | null> {
     url.searchParams.append('api_key', TMDB_API_KEY);
 
     try {
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), { cf: { cacheTtl: 3600, cacheEverything: true } } as any);
         if (!response.ok) {
             console.error(`TMDB API Error fetching TV show by id: ${response.statusText}`);
             return null;
