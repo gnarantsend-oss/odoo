@@ -26,11 +26,16 @@ export async function generateMetadata(
   const season = sp?.season || '1';
   const episode = sp?.episode || '1';
 
+  const parentOG = (await parent).openGraph || {};
+  const safeParentOG = Object.fromEntries(
+    Object.entries(parentOG).map(([k, v]) => [k, v === null ? undefined : v])
+  );
+
   return {
     title: `Watch ${show.name} S${season} E${episode}`,
     description: `Stream season ${season} episode ${episode} of ${show.name} in high quality.`,
     openGraph: {
-      ...((await parent).openGraph || {}),
+      ...safeParentOG,
       title: `Watch ${show.name} S${season} E${episode}`,
       description: `Stream season ${season} episode ${episode} of ${show.name} in high quality.`,
       type: 'video.episode',

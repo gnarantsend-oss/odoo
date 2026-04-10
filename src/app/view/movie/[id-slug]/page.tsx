@@ -22,11 +22,16 @@ export async function generateMetadata(
   const movie = await fetchMovieById(id);
   if (!movie) return { title: 'Not Found' };
 
+  const parentOG = (await parent).openGraph || {};
+  const safeParentOG = Object.fromEntries(
+    Object.entries(parentOG).map(([k, v]) => [k, v === null ? undefined : v])
+  );
+
   return {
     title: `Watch ${movie.title}`,
     description: `Stream the movie ${movie.title} in high quality.`,
     openGraph: {
-      ...((await parent).openGraph || {}),
+      ...safeParentOG,
       title: `Watch ${movie.title}`,
       description: `Stream the movie ${movie.title} in high quality.`,
       type: 'video.movie',
