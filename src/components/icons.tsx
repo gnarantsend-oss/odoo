@@ -2,9 +2,9 @@ import type * as React from 'react';
 
 export const MZtvLogo = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
   <img
-    src="/logo.png"
-    alt="MZtv Logo"
+    src="/logo.svg"
+    alt="Narhan TV"
     {...props}
-    className='h-12 w-auto'
+    className='h-10 w-auto'
   />
 );
