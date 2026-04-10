@@ -81,7 +81,7 @@ async function anilistFetch(query: string, variables: object) {
   };
 
   try {
-    const response = await fetch(ANILIST_API_URL, { ...options, cf: { cacheTtl: 3600, cacheEverything: true } } as any);
+    const response = await fetch(ANILIST_API_URL, options);
 
     if (!response.ok) {
       console.error(`AniList API responded with status: ${response.status}`);
