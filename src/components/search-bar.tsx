@@ -19,9 +19,9 @@ import { slugify, cn } from '@/lib/utils';
 type Suggestion = Media | Movie | TVShow;
 
 const getSuggestionUrl = (item: Suggestion, type: string): string => {
-    if ('title' in item && typeof item.title === 'object') { // AniList Media
+    if ('title' in item && typeof item.title === 'object' && 'type' in item) { // AniList Media
         const title = item.title.english || item.title.romaji;
-        return `/media/${item.type.toLowerCase()}/${item.id}-${slugify(title)}`;
+        return `/media/${(item as Media).type.toLowerCase()}/${item.id}-${slugify(title)}`;
     }
     if ('title' in item && typeof item.title === 'string') { // TMDB Movie
         return `/media/movie/${item.id}-${slugify(item.title)}`;
