@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   },
   other: {
     monetag: 'e7254022db39c3b462f95c472c47b7fe',
+    '1ea22d884bba68f65946ce090b81a1e7f0f8f447': '1ea22d884bba68f65946ce090b81a1e7f0f8f447',
+    referrer: 'no-referrer-when-downgrade',
   },
   openGraph: {
     title: 'Narhan TV',
