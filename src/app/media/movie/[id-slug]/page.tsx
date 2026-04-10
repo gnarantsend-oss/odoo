@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { fetchMovieById, getTMDBImageUrl } from '@/lib/tmdb';

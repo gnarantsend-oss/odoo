@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { notFound } from 'next/navigation';
 import { fetchTVShowById, getTMDBImageUrl } from '@/lib/tmdb';
 import type { Metadata, ResolvingMetadata } from 'next';
