@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     icon: '/logo.svg',
     apple: '/logo.svg',
   },
+  other: {
+    monetag: 'e7254022db39c3b462f95c472c47b7fe',
+  },
   openGraph: {
     title: 'Narhan TV',
     description: 'Монголын тэргүүлэх стриминг платформ. Anime, Manga, Movies, TV Shows үнэгүй үзнэ үү.',
@@ -75,6 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={cn('font-sans antialiased flex flex-col min-h-screen', nunito.variable)}>
+      <script dangerouslySetInnerHTML={{__html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}`}} />
       <DisclaimerModal />
         <div className="flex-grow">
           {children}
