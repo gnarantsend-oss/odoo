@@ -57,35 +57,27 @@ export default async function Home({
         tvSearchResults = await fetchFromTMDB('/search/tv', { query });
       }
     } else {
-      [trendingAnime, popularAnime, trendingManga, popularManga, trendingMovies, popularMovies, topRatedMovies, nowPlayingMovies, upcomingMovies, trendingTv, popularTv] = await Promise.all([
-        fetchFromAniList({
-          type: 'ANIME',
-          sort: ['TRENDING_DESC', 'POPULARITY_DESC'],
-          perPage: 10,
-        }),
-        fetchFromAniList({
-          type: 'ANIME',
-          sort: ['POPULARITY_DESC'],
-          perPage: 20,
-        }),
-        fetchFromAniList({
-          type: 'MANGA',
-          sort: ['TRENDING_DESC', 'POPULARITY_DESC'],
-          perPage: 10,
-        }),
-        fetchFromAniList({
-          type: 'MANGA',
-          sort: ['POPULARITY_DESC'],
-          perPage: 20,
-        }),
-        fetchFromTMDB('/trending/movie/week'),
-        fetchFromTMDB('/movie/popular'),
-        fetchFromTMDB('/movie/top_rated'),
-        fetchFromTMDB('/movie/now_playing'),
-        fetchFromTMDB('/movie/upcoming'),
-        fetchFromTMDB('/trending/tv/week'),
-        fetchFromTMDB('/tv/popular'),
+      // AniList болон TMDB тусад нь — нэг бүтэлдсэн ч нөгөө ажиллана
+      const [aniRes, tmdbRes] = await Promise.all([
+        Promise.allSettled([
+          fetchFromAniList({ type: 'ANIME', sort: ['TRENDING_DESC', 'POPULARITY_DESC'], perPage: 10 }),
+          fetchFromAniList({ type: 'ANIME', sort: ['POPULARITY_DESC'], perPage: 20 }),
+          fetchFromAniList({ type: 'MANGA', sort: ['TRENDING_DESC', 'POPULARITY_DESC'], perPage: 10 }),
+          fetchFromAniList({ type: 'MANGA', sort: ['POPULARITY_DESC'], perPage: 20 }),
+        ]),
+        Promise.allSettled([
+          fetchFromTMDB('/trending/movie/week'),
+          fetchFromTMDB('/movie/popular'),
+          fetchFromTMDB('/movie/top_rated'),
+          fetchFromTMDB('/movie/now_playing'),
+          fetchFromTMDB('/movie/upcoming'),
+          fetchFromTMDB('/trending/tv/week'),
+          fetchFromTMDB('/tv/popular'),
+        ]),
       ]);
+      const getVal = (r: PromiseSettledResult<any>) => r.status === 'fulfilled' ? r.value : [];
+      [trendingAnime, popularAnime, trendingManga, popularManga] = aniRes.map(getVal) as [Media[], Media[], Media[], Media[]];
+      [trendingMovies, popularMovies, topRatedMovies, nowPlayingMovies, upcomingMovies, trendingTv, popularTv] = tmdbRes.map(getVal) as [Movie[], Movie[], Movie[], Movie[], Movie[], TVShow[], TVShow[]];
     }
   } catch (error) {
     console.error('Failed to fetch data:', error);
