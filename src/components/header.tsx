@@ -18,7 +18,7 @@ const navItems = [
 ];
 
 const mongolItem = { name: 'Монгол', href: '/mongol' };
-const dramaItem = { name: 'Drama', href: 'https://progressmagnify.com/kb06gx6fqy?key=5de40f0f2fb290453196572a5df548df' };
+const dramaItem = { name: 'Drama', href: '/kdrama' };
 
 function HeaderNavigation({ isMobile, onLinkClick }: { isMobile?: boolean; onLinkClick?: () => void }) {
   const pathname = usePathname();

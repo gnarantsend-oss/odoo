@@ -5,8 +5,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import DisclaimerModal from '@/components/disclaimer-modal';
-import Script from 'next/script';
-
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -25,8 +23,6 @@ export const metadata: Metadata = {
     apple: '/logo.svg',
   },
   other: {
-    monetag: 'e7254022db39c3b462f95c472c47b7fe',
-    '1ea22d884bba68f65946ce090b81a1e7f0f8f447': '1ea22d884bba68f65946ce090b81a1e7f0f8f447',
     referrer: 'no-referrer-when-downgrade',
   },
   openGraph: {
@@ -59,7 +55,7 @@ function Footer() {
         <div className="flex flex-col items-center gap-2 text-center md:items-start md:text-left">
           <p>&copy; {new Date().getFullYear()} Narhan TV. All Rights Reserved.</p>
           <p className="max-w-md text-xs">
-            All media content is provided by third-party services. 
+            All media content is provided by third-party services.
             Narhan TV does not claim ownership of any anime, movies, TV shows, or manga linked or embedded on this site.
           </p>
         </div>
@@ -82,27 +78,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={cn('font-sans antialiased flex flex-col min-h-screen', nunito.variable)}>
-      <script dangerouslySetInnerHTML={{__html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}`}} />
-      <Script id="ads-sequence" strategy="afterInteractive" dangerouslySetInnerHTML={{__html: `
-function loadScript(src, delay, attrs) {
-  setTimeout(function() {
-    var s = document.createElement('script');
-    s.src = src;
-    s.async = true;
-    if (attrs) { Object.keys(attrs).forEach(function(k){ s.setAttribute(k, attrs[k]); }); }
-    document.head.appendChild(s);
-  }, delay);
-}
-function loadInline(code, delay) {
-  setTimeout(function() { (new Function(code))(); }, delay);
-}
-loadScript('https://progressmagnify.com/c0/fc/a8/c0fca85dae2f795fa6a3ce8123d760eb.js', 0);
-loadScript('https://5gvci.com/act/files/tag.min.js?z=10860352', 4000, {'data-cfasync': 'false'});
-loadScript('https://progressmagnify.com/5c/97/80/5c978000774b48cd1bcd94880d4af078.js', 8000);
-loadInline("(function(s){s.dataset.zone='10860355',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))", 13000);
-loadInline("(function(keclo){var d=document,s=d.createElement('script'),l=d.scripts[d.scripts.length-1];s.settings=keclo||{};s.src='//conventionalresponse.com/bjXGV/s.d/GIl/0/YeWPcE/ze/mX9vuWZaUilRkxPNTsYI5NNQDbgA0DNujvEctRN/jTk/0XOADxQ/2/N/QS';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';l.parentNode.insertBefore(s,l);})({})", 23000);
-      `}} />
-      <DisclaimerModal />
+        <script dangerouslySetInnerHTML={{__html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}`}} />
+        <DisclaimerModal />
         <div className="flex-grow">
           {children}
         </div>

@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -20,9 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const VAST_URL = '/api/vast';
-const MIDROLL_INTERVAL = 10 * 60 * 1000; // 10 минут
-
 interface ViewerProps {
   media: ViewerMedia;
   initialItemNumber: number;
@@ -38,100 +34,6 @@ const getIframeSrc = (type: 'anime' | 'manga' | 'movie' | 'tv', mediaId: number 
   return '';
 };
 
-function AdOverlay({ onComplete }: { onComplete: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [countdown, setCountdown] = useState(5);
-  const [canSkip, setCanSkip] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    // VAST XML татаж, MediaFile URL олох
-    const fetchVast = async () => {
-      try {
-        const res = await fetch(VAST_URL, { mode: 'cors' });
-        const text = await res.text();
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(text, 'text/xml');
-        const mediaFiles = xml.querySelectorAll('MediaFile');
-        let bestUrl = '';
-        // mp4, webm, ямар ч видео формат хүлээн авна
-        mediaFiles.forEach((mf) => {
-          const content = mf.textContent?.trim().replace(/^<!\[CDATA\[|\]\]>$/g, '').trim() || '';
-          if (content.startsWith('http') && !bestUrl) bestUrl = content;
-          // mp4 олдвол давуу эрх өгнө
-          const type = mf.getAttribute('type') || '';
-          if (type.includes('mp4') && content.startsWith('http')) bestUrl = content;
-        });
-        if (!bestUrl) {
-          const match = text.match(/https?:\/\/[^\s<"\]]+\.(mp4|webm|ogg)[^\s<"\]]*/i);
-          if (match) bestUrl = match[0];
-        }
-        if (bestUrl) {
-          setVideoUrl(bestUrl);
-        } else {
-          setFailed(true);
-          onComplete();
-        }
-      } catch {
-        setFailed(true);
-        onComplete();
-      }
-    };
-    fetchVast();
-  }, [onComplete]);
-
-  useEffect(() => {
-    if (!videoUrl) return;
-    const timer = setInterval(() => {
-      setCountdown(p => {
-        if (p <= 1) { clearInterval(timer); setCanSkip(true); return 0; }
-        return p - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [videoUrl]);
-
-  if (failed) return null;
-
-  return (
-    <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
-      {!videoUrl ? (
-        <Loader2 className="h-8 w-8 animate-spin text-white" />
-      ) : (
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          autoPlay
-          playsInline
-          className="w-full h-full object-contain"
-          onEnded={onComplete}
-          onError={onComplete}
-        />
-      )}
-      <div className="absolute top-3 left-3 bg-black/70 text-white text-xs px-2 py-1 rounded">
-        Реклам
-      </div>
-      {videoUrl && (
-        <div className="absolute bottom-4 right-4">
-          {canSkip ? (
-            <button
-              onClick={onComplete}
-              className="bg-white/90 text-black text-sm font-semibold px-4 py-2 rounded hover:bg-white transition"
-            >
-              Алгасах →
-            </button>
-          ) : (
-            <div className="bg-black/70 text-white text-sm px-3 py-1 rounded">
-              {countdown}с дараа алгасна
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Viewer({ media, initialItemNumber, initialSeasonNumber = 1, type }: ViewerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -140,7 +42,6 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
   const [itemNumber, setItemNumber] = useState(initialItemNumber);
   const [seasonNumber, setSeasonNumber] = useState(initialSeasonNumber);
   const [isDub, setIsDub] = useState(searchParams.get('dub') === '1');
-  const [showAd, setShowAd] = useState(type !== 'manga');
 
   const mediaId = media.imdb_id || media.id;
   const [iframeSrc, setIframeSrc] = useState(() => getIframeSrc(type, mediaId, initialItemNumber, initialSeasonNumber, isDub));
@@ -152,13 +53,6 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
   const isMovie = type === 'movie';
   const isTv = type === 'tv';
   const totalItems = isAnime ? media.episodes : (isTv ? (media.seasons?.find(s => s.season_number === seasonNumber)?.episode_count) : media.chapters);
-
-  // Mid-roll: 10 минутын дараа
-  useEffect(() => {
-    if (showAd || isManga) return;
-    const t = setTimeout(() => setShowAd(true), MIDROLL_INTERVAL);
-    return () => clearTimeout(t);
-  }, [showAd, isManga, itemNumber]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -179,7 +73,6 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
   const handleNavigation = (newItemNumber: number) => {
     if (newItemNumber < 1) { toast({ title: "You're at the beginning!", description: "This is the first item." }); return; }
     if (totalItems && newItemNumber > totalItems) { toast({ title: "You've reached the end!", description: "This is the last available item." }); return; }
-    setShowAd(true); // Episod солигдоход pre-roll
     setItemNumber(newItemNumber);
   };
 
@@ -225,10 +118,7 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
         </header>
 
         <main className={cn('relative flex flex-1 items-center justify-center overflow-hidden', isManga ? '' : 'bg-black')}>
-          {showAd && (
-            <AdOverlay onComplete={() => setShowAd(false)} />
-          )}
-          {isLoading && !showAd && (
+          {isLoading && (
             <div className="flex h-full w-full items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
@@ -239,7 +129,7 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
               src={iframeSrc}
               onLoad={() => setIsLoading(false)}
               allowFullScreen
-              className={cn('h-full w-full border-0', (isLoading || showAd) ? 'hidden' : 'block', isManga ? 'max-w-4xl' : '')}
+              className={cn('h-full w-full border-0', isLoading ? 'hidden' : 'block', isManga ? 'max-w-4xl' : '')}
               title={`Viewer for ${title}`}
             />
           )}
