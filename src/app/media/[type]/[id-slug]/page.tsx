@@ -1,74 +1,69 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { fetchMediaById } from '@/lib/anilist';
-import { type Metadata } from 'next';
 import { slugify } from '@/lib/utils';
 import Header from '@/components/header';
 import { SeasonEpisodeSelector } from '@/components/season-episode-selector';
 import { Badge } from '@/components/ui/badge';
 import RelatedMedia from '@/components/related-media';
 import RecommendedMedia from '@/components/recommended-media';
+import type { Media } from '@/lib/types';
 
-type Props = {
-  params: Promise<{
-    type: 'anime' | 'manga';
-    'id-slug': string;
-  }>;
-};
+export default function MediaDetailsPage() {
+  const params = useParams();
+  const type  = params['type'] as string;
+  const idSlug = params['id-slug'] as string;
 
-export async function generateMetadata(
-  { params }: Props
-): Promise<Metadata> {
-  const { 'id-slug': idSlug } = await params;
-  const id = parseInt(idSlug.split('-')[0]);
+  const [media, setMedia]   = useState<Media | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState(false);
 
-  if (isNaN(id)) {
-    return { title: 'Not Found' };
+  useEffect(() => {
+    if (!idSlug) return;
+    const id = parseInt(idSlug.split('-')[0], 10);
+    if (isNaN(id) || !['anime', 'manga'].includes(type)) {
+      setError(true); setLoading(false); return;
+    }
+    fetchMediaById(id)
+      .then(data => {
+        if (!data) { setError(true); }
+        else { setMedia(data); }
+      })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
+  }, [idSlug, type]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </main>
+      </div>
+    );
   }
 
-  const media = await fetchMediaById(id);
-  if (!media) {
-    return { title: 'Not Found' };
+  if (error || !media) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <Header />
+        <main className="flex-1 flex flex-col items-center justify-center gap-4">
+          <h1 className="text-4xl font-bold">404</h1>
+          <p className="text-muted-foreground">Хуудас олдсонгүй</p>
+          <Link href="/" className="text-primary hover:underline">Нүүр хуудас руу буцах</Link>
+        </main>
+      </div>
+    );
   }
 
-  const title = media.title.english || media.title.romaji;
-  const description = media.description?.replace(/<br>/g, '\n').replace(/<i>/g, '').replace(/<\/i>/g, '') || 'No description available.';
-
-  return {
-    title: title,
-    description: description,
-    openGraph: {
-      title: title,
-      description: description,
-      images: [media.coverImage.extraLarge].filter(Boolean) as string[],
-      type: 'video.tv_show',
-    },
-  };
-}
-
-export default async function MediaDetailsPage({ params }: Props) {
-  const { 'id-slug': idSlug, type } = await params;
-  const id = parseInt(idSlug.split('-')[0], 10);
-
-  if (isNaN(id) || !['anime', 'manga'].includes(type)) {
-    notFound();
-  }
-
-  const media = await fetchMediaById(id);
-  if (!media) {
-    notFound();
-  }
-
-  const expectedSlug = slugify(media.title.english || media.title.romaji);
-  const actualSlug = idSlug.substring(id.toString().length + 1);
-
-  if (actualSlug !== expectedSlug) {
-    // Optional: Redirect to canonical URL if slug is incorrect for SEO
-  }
-
-  const title = media.title.english || media.title.romaji;
-  const description = media.description?.replace(/<br>/g, '\n').replace(/<i>/g, '').replace(/<\/i>/g, '') || 'No description available.';
-  const isAnime = media.type === 'ANIME';
+  const title       = media.title.english || media.title.romaji;
+  const description = media.description?.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '') || 'Тайлбар байхгүй.';
+  const isAnime     = media.type === 'ANIME';
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -115,7 +110,7 @@ export default async function MediaDetailsPage({ params }: Props) {
               </div>
             </div>
           </div>
-          
+
           <div className="mt-8 space-y-12">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               <div className="md:col-span-2 space-y-4">
@@ -133,7 +128,6 @@ export default async function MediaDetailsPage({ params }: Props) {
             {media.relations && <RelatedMedia relations={media.relations} />}
             <RecommendedMedia media={media} />
           </div>
-
         </div>
       </main>
     </div>

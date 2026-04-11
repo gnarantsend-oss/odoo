@@ -1,64 +1,59 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { fetchMediaById } from '@/lib/anilist';
-import type { Metadata, ResolvingMetadata } from 'next';
-import { slugify } from '@/lib/utils';
 import JsonLd from '@/components/json-ld';
 import Viewer from '@/components/viewer';
+import Header from '@/components/header';
+import Link from 'next/link';
+import type { Media } from '@/lib/types';
 
-type Props = {
-  params: Promise<{
-    type: 'anime' | 'manga';
-    'id-slug': string;
-  }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+export default function ViewPage() {
+  const params       = useParams();
+  const searchParams = useSearchParams();
+  const type   = params['type'] as string;
+  const idSlug = params['id-slug'] as string;
 
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const { 'id-slug': idSlug, type } = await params;
-  const sp = await searchParams;
-  const id = parseInt(idSlug.split('-')[0]);
+  const itemNumberParam  = searchParams.get('item');
+  const initialItemNumber = parseInt(itemNumberParam || '1', 10);
 
-  if (isNaN(id)) return { title: 'Not Found' };
+  const [media, setMedia]     = useState<Media | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(false);
 
-  const media = await fetchMediaById(id);
-  if (!media) return { title: 'Not Found' };
+  useEffect(() => {
+    if (!idSlug) return;
+    const id = parseInt(idSlug.split('-')[0], 10);
+    if (isNaN(id) || !['anime', 'manga'].includes(type)) {
+      setError(true); setLoading(false); return;
+    }
+    fetchMediaById(id)
+      .then(data => { if (!data) setError(true); else setMedia(data); })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
+  }, [idSlug, type]);
 
-  const title = media.title.english || media.title.romaji;
-  const isAnime = type === 'anime';
-  const itemType = isAnime ? 'Episode' : 'Chapter';
-  const itemNumber = sp?.item || '1';
-
-  return {
-    title: `${isAnime ? 'Watch' : 'Read'} ${title} ${itemType} ${itemNumber}`,
-    description: `Stream ${itemType.toLowerCase()} ${itemNumber} of the ${isAnime ? 'anime series' : 'manga'} ${title} in high quality.`,
-    openGraph: {
-      title: `${isAnime ? 'Watch' : 'Read'} ${title} ${itemType} ${itemNumber}`,
-      description: `Stream ${itemType.toLowerCase()} ${itemNumber} of the ${isAnime ? 'anime series' : 'manga'} ${title} in high quality.`,
-      images: [media.coverImage.extraLarge].filter(Boolean) as string[],
-      type: isAnime ? 'video.episode' : 'article',
-    },
-  };
-}
-
-export default async function ViewPage({ params, searchParams }: Props) {
-  const { 'id-slug': idSlug, type } = await params;
-  const sp = await searchParams;
-
-  const id = parseInt(idSlug.split('-')[0], 10);
-  const itemNumberParam = sp?.item;
-  const initialItemNumber = Array.isArray(itemNumberParam)
-    ? parseInt(itemNumberParam[0], 10)
-    : parseInt((itemNumberParam as string | undefined) || '1', 10);
-
-  if (isNaN(id) || !['anime', 'manga'].includes(type) || isNaN(initialItemNumber)) {
-    notFound();
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
   }
 
-  const media = await fetchMediaById(id);
-  if (!media) notFound();
+  if (error || !media) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <Header />
+        <main className="flex-1 flex flex-col items-center justify-center gap-4">
+          <h1 className="text-4xl font-bold">404</h1>
+          <p className="text-muted-foreground">Хуудас олдсонгүй</p>
+          <Link href="/" className="text-primary hover:underline">Нүүр хуудас руу буцах</Link>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <>
