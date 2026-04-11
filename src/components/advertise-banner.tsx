@@ -195,18 +195,15 @@ export default function AdvertiseBanner() {
           }}>
             {/* Corner accents */}
             {([
-              { top: '-3px', bottom: 'auto', left: '-3px', right: 'auto', borderRadius: '4px 0 0 0', borderRight: 'none',                     borderBottom: 'none'                     },
-              { top: '-3px', bottom: 'auto', left: 'auto', right: '-3px', borderRadius: '0 4px 0 0', borderLeft:  'none',                     borderBottom: 'none'                     },
-              { top: 'auto', bottom: '-3px', left: '-3px', right: 'auto', borderRadius: '0 0 0 4px', borderRight: 'none',                     borderTop:    'none'                     },
-              { top: 'auto', bottom: '-3px', left: 'auto', right: '-3px', borderRadius: '0 0 4px 0', borderLeft:  'none',                     borderTop:    'none'                     },
+              { top: '-3px', bottom: 'auto', left: '-3px', right: 'auto', borderRadius: '4px 0 0 0', borderRight: 'none',  borderBottom: 'none' },
+              { top: '-3px', bottom: 'auto', left: 'auto', right: '-3px', borderRadius: '0 4px 0 0', borderLeft:  'none',  borderBottom: 'none' },
+              { top: 'auto', bottom: '-3px', left: '-3px', right: 'auto', borderRadius: '0 0 0 4px', borderRight: 'none',  borderTop:    'none' },
+              { top: 'auto', bottom: '-3px', left: 'auto', right: '-3px', borderRadius: '0 0 4px 0', borderLeft:  'none',  borderTop:    'none' },
             ] as const).map((corner, i) => (
               <div key={i} style={{
                 position: 'absolute',
-                top: corner.top, bottom: corner.bottom,
-                left: corner.left, right: corner.right,
                 width: '16px', height: '16px',
                 border: '2.5px solid #49C6E5',
-                borderRadius: corner.borderRadius,
                 ...corner,
               }}/>
             ))}
