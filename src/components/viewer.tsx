@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import Script from 'next/script';
 
 import { type ViewerMedia } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -40,84 +39,95 @@ const getIframeSrc = (type: 'anime' | 'manga' | 'movie' | 'tv', mediaId: number 
 };
 
 function AdOverlay({ onComplete }: { onComplete: () => void }) {
-  const adContainerRef = useRef<HTMLDivElement>(null);
-  const adVideoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [countdown, setCountdown] = useState(5);
   const [canSkip, setCanSkip] = useState(false);
-  const imaRef = useRef<any>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    let adsManager: any = null;
-
-    const initIMA = () => {
-      if (!adContainerRef.current || !adVideoRef.current || !(window as any).google?.ima) return;
-      const google = (window as any).google;
-      const adDisplayContainer = new google.ima.AdDisplayContainer(adContainerRef.current, adVideoRef.current);
-      adDisplayContainer.initialize();
-      const adsLoader = new google.ima.AdsLoader(adDisplayContainer);
-
-      adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, (e: any) => {
-        adsManager = e.getAdsManager(adVideoRef.current);
-        adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, onComplete);
-        adsManager.addEventListener(google.ima.AdEvent.Type.SKIPPED, onComplete);
-        adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onComplete);
-        try {
-          adsManager.init(adContainerRef.current!.offsetWidth || 640, adContainerRef.current!.offsetHeight || 360, google.ima.ViewMode.NORMAL);
-          adsManager.start();
-          imaRef.current = adsManager;
-        } catch { onComplete(); }
-      }, false);
-
-      adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onComplete, false);
-      const req = new google.ima.AdsRequest();
-      req.adTagUrl = VAST_URL;
-      req.linearAdSlotWidth = 640;
-      req.linearAdSlotHeight = 360;
-      adsLoader.requestAds(req);
+    // VAST XML татаж, MediaFile URL олох
+    const fetchVast = async () => {
+      try {
+        const res = await fetch(VAST_URL);
+        const text = await res.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, 'text/xml');
+        // MediaFile URL олох
+        const mediaFiles = xml.querySelectorAll('MediaFile');
+        let bestUrl = '';
+        mediaFiles.forEach((mf) => {
+          const type = mf.getAttribute('type') || '';
+          if (type.includes('mp4') || type.includes('video')) {
+            bestUrl = mf.textContent?.trim() || '';
+          }
+        });
+        if (!bestUrl) {
+          // CDATA эсвэл ямар ч MediaFile олдохгүй бол
+          const match = text.match(/<MediaFile[^>]*>\s*(?:<!\[CDATA\[)?(https?:\/\/[^\s<\]]+)/);
+          if (match) bestUrl = match[1];
+        }
+        if (bestUrl) {
+          setVideoUrl(bestUrl);
+        } else {
+          setFailed(true);
+          onComplete();
+        }
+      } catch {
+        setFailed(true);
+        onComplete();
+      }
     };
+    fetchVast();
+  }, [onComplete]);
 
-    // Fallback: IMA ажиллахгүй бол countdown
+  useEffect(() => {
+    if (!videoUrl) return;
     const timer = setInterval(() => {
       setCountdown(p => {
         if (p <= 1) { clearInterval(timer); setCanSkip(true); return 0; }
         return p - 1;
       });
     }, 1000);
+    return () => clearInterval(timer);
+  }, [videoUrl]);
 
-    if ((window as any).google?.ima) initIMA();
-    else {
-      // IMA SDK ачаалагдаагүй бол 1.5с хүлээгээд дахин оролдоно
-      const retry = setTimeout(() => {
-        if ((window as any).google?.ima) initIMA();
-        // Хэрэв IMA байхгүй бол countdown дуусахад алгасна (fallback)
-      }, 1500);
-      return () => { clearTimeout(retry); clearInterval(timer); adsManager?.destroy(); };
-    }
-
-    return () => { clearInterval(timer); adsManager?.destroy(); };
-  }, [onComplete]);
+  if (failed) return null;
 
   return (
     <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
-      <div ref={adContainerRef} className="absolute inset-0" />
-      <video ref={adVideoRef} className="w-full h-full object-contain" />
+      {!videoUrl ? (
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      ) : (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          autoPlay
+          playsInline
+          className="w-full h-full object-contain"
+          onEnded={onComplete}
+          onError={onComplete}
+        />
+      )}
       <div className="absolute top-3 left-3 bg-black/70 text-white text-xs px-2 py-1 rounded">
         Реклам
       </div>
-      <div className="absolute bottom-4 right-4">
-        {canSkip ? (
-          <button
-            onClick={onComplete}
-            className="bg-white/90 text-black text-sm font-semibold px-4 py-2 rounded hover:bg-white transition"
-          >
-            Алгасах →
-          </button>
-        ) : (
-          <div className="bg-black/70 text-white text-sm px-3 py-1 rounded">
-            {countdown}с дараа алгасна
-          </div>
-        )}
-      </div>
+      {videoUrl && (
+        <div className="absolute bottom-4 right-4">
+          {canSkip ? (
+            <button
+              onClick={onComplete}
+              className="bg-white/90 text-black text-sm font-semibold px-4 py-2 rounded hover:bg-white transition"
+            >
+              Алгасах →
+            </button>
+          ) : (
+            <div className="bg-black/70 text-white text-sm px-3 py-1 rounded">
+              {countdown}с дараа алгасна
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -131,7 +141,6 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
   const [seasonNumber, setSeasonNumber] = useState(initialSeasonNumber);
   const [isDub, setIsDub] = useState(searchParams.get('dub') === '1');
   const [showAd, setShowAd] = useState(type !== 'manga');
-  const [imaReady, setImaReady] = useState(false);
 
   const mediaId = media.imdb_id || media.id;
   const [iframeSrc, setIframeSrc] = useState(() => getIframeSrc(type, mediaId, initialItemNumber, initialSeasonNumber, isDub));
@@ -180,7 +189,6 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
 
   return (
     <>
-      <Script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js" onReady={() => setImaReady(true)} />
       <div className={cn("flex h-screen flex-col text-foreground", isManga ? 'bg-stone-100 dark:bg-stone-900' : 'bg-background')}>
         <header className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4 overflow-hidden">
