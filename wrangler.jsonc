@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Worker-ийн нэр — Cloudflare dashboard-д харагдана
+  "name": "odoo",
+  // OpenNext build output
+  "main": ".open-next/worker.js",
+  // 2026-04-11 буюу өнөөдрийн огноо
+  "compatibility_date": "2026-04-11",
+  "compatibility_flags": [
+    // Node.js API-г Worker дотор ашиглах боломжийг нэмнэ
+    "nodejs_compat",
+    // Public URL-уудад fetch хийх зөвшөөрөл
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    // Static file-ууд (JS, CSS, зураг)
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // ISR revalidation-д өөрийгөө дуудах боломж
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "odoo"
+    }
+  ]
+  // --- Нэмэлт тохиргоо (шаардлагатай бол тайлбарыг арилга) ---
+  //
+  // ISR cache-д R2 ашиглах (Cloudflare dashboard-д bucket үүсгэх хэрэгтэй):
+  // "r2_buckets": [
+  //   {
+  //     "binding": "NEXT_INC_CACHE_R2_BUCKET",
+  //     "bucket_name": "mztv-cache"
+  //   }
+  // ]
+}
