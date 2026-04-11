@@ -1,69 +1,43 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import { fetchMediaById } from '@/lib/anilist';
-import { slugify } from '@/lib/utils';
+import { type Metadata } from 'next';
 import Header from '@/components/header';
 import { SeasonEpisodeSelector } from '@/components/season-episode-selector';
 import { Badge } from '@/components/ui/badge';
 import RelatedMedia from '@/components/related-media';
 import RecommendedMedia from '@/components/recommended-media';
-import type { Media } from '@/lib/types';
 
-export default function MediaDetailsPage() {
-  const params = useParams();
-  const type  = params['type'] as string;
-  const idSlug = params['id-slug'] as string;
+type Props = {
+  params: Promise<{ type: 'anime' | 'manga'; 'id-slug': string }>;
+};
 
-  const [media, setMedia]   = useState<Media | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]   = useState(false);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { 'id-slug': idSlug } = await params;
+  const id = parseInt(idSlug.split('-')[0]);
+  if (isNaN(id)) return { title: 'Not Found' };
+  const media = await fetchMediaById(id);
+  if (!media) return { title: 'Not Found' };
+  const title = media.title.english || media.title.romaji;
+  const description = media.description?.replace(/<br>/g, '\n').replace(/<i>/g, '').replace(/<\/i>/g, '') || '';
+  return {
+    title,
+    description,
+    openGraph: { title, description, images: [media.coverImage.extraLarge].filter(Boolean) as string[], type: 'video.tv_show' },
+  };
+}
 
-  useEffect(() => {
-    if (!idSlug) return;
-    const id = parseInt(idSlug.split('-')[0], 10);
-    if (isNaN(id) || !['anime', 'manga'].includes(type)) {
-      setError(true); setLoading(false); return;
-    }
-    fetchMediaById(id)
-      .then(data => {
-        if (!data) { setError(true); }
-        else { setMedia(data); }
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [idSlug, type]);
+export default async function MediaDetailsPage({ params }: Props) {
+  const { 'id-slug': idSlug, type } = await params;
+  const id = parseInt(idSlug.split('-')[0], 10);
+  if (isNaN(id) || !['anime', 'manga'].includes(type)) notFound();
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        </main>
-      </div>
-    );
-  }
+  const media = await fetchMediaById(id);
+  if (!media) notFound();
 
-  if (error || !media) {
-    return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <Header />
-        <main className="flex-1 flex flex-col items-center justify-center gap-4">
-          <h1 className="text-4xl font-bold">404</h1>
-          <p className="text-muted-foreground">Хуудас олдсонгүй</p>
-          <Link href="/" className="text-primary hover:underline">Нүүр хуудас руу буцах</Link>
-        </main>
-      </div>
-    );
-  }
-
-  const title       = media.title.english || media.title.romaji;
-  const description = media.description?.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '') || 'Тайлбар байхгүй.';
-  const isAnime     = media.type === 'ANIME';
+  const title = media.title.english || media.title.romaji;
+  const description = media.description?.replace(/<br>/g, '\n').replace(/<i>/g, '').replace(/<\/i>/g, '') || 'Тайлбар байхгүй.';
+  const isAnime = media.type === 'ANIME';
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -71,31 +45,16 @@ export default function MediaDetailsPage() {
       <main className="flex-1">
         <div className="relative h-[30vh] w-full sm:h-[40vh] md:h-[50vh]">
           {media.bannerImage && (
-            <Image
-              src={media.bannerImage}
-              alt={`Backdrop for ${title}`}
-              fill
-              className="object-cover"
-              priority
-              unoptimized
-            />
+            <Image src={media.bannerImage} alt={title} fill className="object-cover" priority unoptimized />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background" />
         </div>
-
         <div className="container mx-auto max-w-5xl -mt-16 px-4 pb-8 sm:px-6 lg:-mt-24 lg:px-8">
           <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-end">
             <div className="w-full max-w-[150px] shrink-0 md:max-w-[200px]">
               {media.coverImage.extraLarge && (
-                <Image
-                  src={media.coverImage.extraLarge}
-                  alt={`Poster for ${title}`}
-                  width={200}
-                  height={300}
-                  className="rounded-lg shadow-xl"
-                  unoptimized
-                />
+                <Image src={media.coverImage.extraLarge} alt={title} width={200} height={300} className="rounded-lg shadow-xl" unoptimized />
               )}
             </div>
             <div className="flex flex-col gap-2 py-4">
@@ -110,7 +69,6 @@ export default function MediaDetailsPage() {
               </div>
             </div>
           </div>
-
           <div className="mt-8 space-y-12">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               <div className="md:col-span-2 space-y-4">
@@ -118,13 +76,10 @@ export default function MediaDetailsPage() {
                 <p className="whitespace-pre-line text-foreground/80">{description}</p>
               </div>
               <div>
-                <h2 className="text-2xl font-bold mb-4">
-                  {isAnime ? 'Watch Now' : 'Read Now'}
-                </h2>
+                <h2 className="text-2xl font-bold mb-4">{isAnime ? 'Watch Now' : 'Read Now'}</h2>
                 <SeasonEpisodeSelector media={media} />
               </div>
             </div>
-
             {media.relations && <RelatedMedia relations={media.relations} />}
             <RecommendedMedia media={media} />
           </div>
