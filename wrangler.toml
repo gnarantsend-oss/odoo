@@ -1,30 +1,19 @@
 name = "narhan-tv"
 main = ".open-next/worker.js"
-compatibility_date = "2025-01-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2026-04-11"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
-# Assets — static файлуудыг Workers KV-д хадгална
 [assets]
 directory = ".open-next/assets"
 binding = "ASSETS"
 
-# Workers-ийн хязгаарлалт тохиргоо
-[limits]
-cpu_ms = 50          # CPU хугацаа (ms)
+[[services]]
+binding = "WORKER_SELF_REFERENCE"
+service = "narhan-tv"
 
-# Cache API ашиглах — Cloudflare-ийн edge cache
-[vars]
-NEXT_CACHE_WORKERS_KV = "true"
+[[r2_buckets]]
+binding = "NEXT_INC_CACHE_R2_BUCKET"
+bucket_name = "narhan-cache"
 
-# KV namespace — page cache-д ашиглана
-[[kv_namespaces]]
-binding = "NEXT_CACHE_WORKERS_KV"
-id = "YOUR_KV_NAMESPACE_ID"       # wrangler kv namespace create "narhan-cache" гэж үүсгэнэ
-
-# Production environment
-[env.production]
-name = "narhan-tv-production"
-
-# Smart placement — хэрэглэгчдэд ойр datacenter-т ажиллуулна
 [placement]
 mode = "smart"
