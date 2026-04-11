@@ -1,4 +1,4 @@
-name = "narhan-tv"
+name = "odoo"
 main = ".open-next/worker.js"
 compatibility_date = "2026-04-11"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
@@ -9,7 +9,7 @@ binding = "ASSETS"
 
 [[services]]
 binding = "WORKER_SELF_REFERENCE"
-service = "narhan-tv"
+service = "odoo"
 
 [[r2_buckets]]
 binding = "NEXT_INC_CACHE_R2_BUCKET"
