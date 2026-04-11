@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     template: '%s | Narhan TV',
     default: 'Narhan TV - Anime, Manga, Movies & TV Shows',
   },
-  description: 'Монголын тэргүүлэх стриминг платформ. Anime, Manga, Movies, TV Shows үнэгүй үзнэ үү.',
-  icons: {
+  description: 'Монголын тэргүүлэх стриминг платформ. Anime, Manga, Movies, TV Shows үнэгүй үзнэ үү. free movie watch online anime free new movie drama free streaming 免费看电影 在线看电影 免费动漫 ver películas gratis anime gratis أفلام مجانية مشاهدة أنمي filmes grátis assistir anime смотреть фильмы бесплатно аниме бесплатно film gratuit anime gratuit kostenlos Filme Anime kostenlos 映画無料視聴 アニメ無料 영화 무료 보기 애니 무료 फ्री मूवी देखें ücretsiz film izle anime ücretsiz فیلم رایگان انیمه رایگان nonton film gratis xem phim miễn phí ดูหนังฟรี อนิเมะฟรี filmy za darmo gratis films kijken дивитися фільми безкоштовно тегін фильм көру bepul film ko\'rish libre na pelikula tonton filem percuma বিনামূল্যে মুভি দেখুন فری فلم دیکھیں סרטים בחינם үнэгүй кино үзэх аниме үнэгүй',
+  keywords: ['free movie','watch movie online','anime free','new movie 2026','watch drama','free streaming','免费看电影','免费动漫','ver películas gratis','أفلام مجانية','filmes grátis','смотреть фильмы бесплатно','film gratuit','kostenlos Filme','映画無料視聴','영화 무료 보기','फ्री मूवी देखें','ücretsiz film izle','فیلم رایگان','nonton film gratis','xem phim miễn phí','ดูหนังฟรี','filmy za darmo','үнэгүй кино үзэх'],
     icon: '/logo.svg',
     apple: '/logo.svg',
   },
