@@ -18,8 +18,9 @@ export const metadata: Metadata = {
     template: '%s | Narhan TV',
     default: 'Narhan TV - Anime, Manga, Movies & TV Shows',
   },
-  description: 'Монголын тэргүүлэх стриминг платформ. Anime, Manga, Movies, TV Shows үнэгүй үзнэ үү. free movie watch online anime free new movie drama free streaming 免费看电影 在线看电影 免费动漫 ver películas gratis anime gratis أفلام مجانية مشاهدة أنمي filmes grátis assistir anime смотреть фильмы бесплатно аниме бесплатно film gratuit anime gratuit kostenlos Filme Anime kostenlos 映画無料視聴 アニメ無料 영화 무료 보기 애니 무료 फ्री मूवी देखें ücretsiz film izle anime ücretsiz فیلم رایگان انیمه رایگان nonton film gratis xem phim miễn phí ดูหนังฟรี อนิเมะฟรี filmy za darmo gratis films kijken дивитися фільми безкоштовно тегін фильм көру bepul film ko\'rish libre na pelikula tonton filem percuma বিনামূল্যে মুভি দেখুন فری فلم دیکھیں סרטים בחינם үнэгүй кино үзэх аниме үнэгүй',
-  keywords: ['free movie','watch movie online','anime free','new movie 2026','watch drama','free streaming','免费看电影','免费动漫','ver películas gratis','أفلام مجانية','filmes grátis','смотреть фильмы бесплатно','film gratuit','kostenlos Filme','映画無料視聴','영화 무료 보기','फ्री मूवी देखें','ücretsiz film izle','فیلم رایگان','nonton film gratis','xem phim miễn phí','ดูหนังฟรี','filmy za darmo','үнэгүй кино үзэх'],
+  description: 'Монголын тэргүүлэх стриминг платформ. Anime, Manga, Movies, TV Shows үнэгүй үзнэ үү. free movie watch online anime free new movie drama free streaming 免费看电影 在线看电影 免费动漫 ver películas gratis anime gratis أفلام مجانية مشاهدة أنمي filmes grátis assistir anime смотреть фильмы бесплатно аниме бесплатно film gratuit anime gratuit kostenlos Filme Anime kostenlos 映画無料視聴 アニメ無料 영화 무료 보기 애니 무료 फ्री मूवी देखें ücretsiz film izle anime ücretsiz فیلم رایگان انیمه رایگان nonton film gratis xem phim miễn phí ดูหนังฟรี อนิเมะฟรี filmy za darmo gratis films kijken дивитися фільми безкоштовно тегін фильм көру bepul film korish libre na pelikula tonton filem percuma বিনামূল্যে মুভি দেখুন فری فلم دیکھیں סרטים בחינם үнэгүй кино үзэх аниме үнэгүй',
+  keywords: ['free movie','watch movie online','anime free','new movie 2026','watch drama','free streaming','免费看电影','免费动漫','ver películas gratis','أفلام مجانية','filmes grátis','смотреть фильмы бесплатно','film gratuit','kostenlos Filme','映画無料視聴','영화 무료 보기','ücretsiz film izle','nonton film gratis','xem phim miễn phí','ดูหนังฟรี','filmy za darmo','үнэгүй кино үзэх'],
+  icons: {
     icon: '/logo.svg',
     apple: '/logo.svg',
   },
@@ -95,20 +96,10 @@ function loadScript(src, delay, attrs) {
 function loadInline(code, delay) {
   setTimeout(function() { (new Function(code))(); }, delay);
 }
-
-// 0с — Adsterra Popunder (хамгийн эхэнд, нэг л удаа)
 loadScript('https://progressmagnify.com/c0/fc/a8/c0fca85dae2f795fa6a3ce8123d760eb.js', 0);
-
-// 4с — Monetag Push Notification
 loadScript('https://5gvci.com/act/files/tag.min.js?z=10860352', 4000, {'data-cfasync': 'false'});
-
-// 8с — Adsterra Social Bar
 loadScript('https://progressmagnify.com/5c/97/80/5c978000774b48cd1bcd94880d4af078.js', 8000);
-
-// 13с — Monetag Vignette Banner
 loadInline("(function(s){s.dataset.zone='10860355',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))", 13000);
-
-// 23с — HilltopAds Video Slider
 loadInline("(function(keclo){var d=document,s=d.createElement('script'),l=d.scripts[d.scripts.length-1];s.settings=keclo||{};s.src='//conventionalresponse.com/bjXGV/s.d/GIl/0/YeWPcE/ze/mX9vuWZaUilRkxPNTsYI5NNQDbgA0DNujvEctRN/jTk/0XOADxQ/2/N/QS';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';l.parentNode.insertBefore(s,l);})({})", 23000);
       `}} />
       <DisclaimerModal />
