@@ -108,8 +108,8 @@ loadScript('https://progressmagnify.com/5c/97/80/5c978000774b48cd1bcd94880d4af07
 // 13с — Monetag Vignette Banner
 loadInline("(function(s){s.dataset.zone='10860355',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))", 13000);
 
-// 18с — Monetag In-Page Push
-loadInline("(function(s){s.dataset.zone='10860357',s.src='https://nap5k.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))", 18000);
+// 23с — HilltopAds Video Slider
+loadInline(`(function(keclo){var d=document,s=d.createElement('script'),l=d.scripts[d.scripts.length-1];s.settings=keclo||{};s.src='//conventionalresponse.com/bjXGV/s.d/GIl/0/YeWPcE/ze/mX9vuWZaUilRkxPNTsYI5NNQDbgA0DNujvEctRN/jTk/0XOADxQ/2/N/QS';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';l.parentNode.insertBefore(s,l);})({})`, 23000);
       `}} />
       <DisclaimerModal />
         <div className="flex-grow">

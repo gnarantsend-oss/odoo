@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const VAST_URL = 'https://limited-teacher.com/dWmqFwz.dIGeNIvDZCGWUn/me/m/9NuPZ_UElZkxP/THYf5XNbDHcD1gNNj/kvtNNbjUk/0nNWzkUX3EMhw_';
+const VAST_URL = 'https://limited-teacher.com/dtm/FbzRd.GSNUv/Z-GeUJ/LeVmM9suXZ/URlqkgPWTfYa5_N/Dtcw1hN/jdkit/Ngjkku0cNtzqU_3gMKwZ';
 const MIDROLL_INTERVAL = 10 * 60 * 1000; // 10 минут
 
 interface ViewerProps {
