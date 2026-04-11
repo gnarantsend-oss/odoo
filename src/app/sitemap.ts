@@ -6,7 +6,7 @@ import { type Media } from '@/lib/types';
 export const revalidate = 86400; // 24 hours
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mztv.mn';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://narhantv.com';
 
   const staticRoutes = [
     {
