@@ -82,16 +82,35 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={cn('font-sans antialiased flex flex-col min-h-screen', nunito.variable)}>
       <script dangerouslySetInnerHTML={{__html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}`}} />
-      {/* Monetag - Push Notifications */}
-      <Script src="https://5gvci.com/act/files/tag.min.js?z=10860352" data-cfasync="false" strategy="afterInteractive" />
-      {/* Monetag - Vignette Banner */}
-      <Script id="monetag-vignette" strategy="afterInteractive" dangerouslySetInnerHTML={{__html: `(function(s){s.dataset.zone='10860355',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`}} />
-      {/* Monetag - In-Page Push */}
-      <Script id="monetag-inpage" strategy="afterInteractive" dangerouslySetInnerHTML={{__html: `(function(s){s.dataset.zone='10860357',s.src='https://nap5k.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`}} />
-      {/* Adsterra - Popunder */}
-      <Script src="https://progressmagnify.com/c0/fc/a8/c0fca85dae2f795fa6a3ce8123d760eb.js" strategy="afterInteractive" />
-      {/* Adsterra - Social Bar */}
-      <Script src="https://progressmagnify.com/5c/97/80/5c978000774b48cd1bcd94880d4af078.js" strategy="afterInteractive" />
+      <Script id="ads-sequence" strategy="afterInteractive" dangerouslySetInnerHTML={{__html: `
+function loadScript(src, delay, attrs) {
+  setTimeout(function() {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    if (attrs) { Object.keys(attrs).forEach(function(k){ s.setAttribute(k, attrs[k]); }); }
+    document.head.appendChild(s);
+  }, delay);
+}
+function loadInline(code, delay) {
+  setTimeout(function() { (new Function(code))(); }, delay);
+}
+
+// 0с — Adsterra Popunder (хамгийн эхэнд, нэг л удаа)
+loadScript('https://progressmagnify.com/c0/fc/a8/c0fca85dae2f795fa6a3ce8123d760eb.js', 0);
+
+// 4с — Monetag Push Notification
+loadScript('https://5gvci.com/act/files/tag.min.js?z=10860352', 4000, {'data-cfasync': 'false'});
+
+// 8с — Adsterra Social Bar
+loadScript('https://progressmagnify.com/5c/97/80/5c978000774b48cd1bcd94880d4af078.js', 8000);
+
+// 13с — Monetag Vignette Banner
+loadInline("(function(s){s.dataset.zone='10860355',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))", 13000);
+
+// 18с — Monetag In-Page Push
+loadInline("(function(s){s.dataset.zone='10860357',s.src='https://nap5k.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))", 18000);
+      `}} />
       <DisclaimerModal />
         <div className="flex-grow">
           {children}

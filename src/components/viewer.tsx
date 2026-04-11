@@ -59,10 +59,10 @@ function AdOverlay({ onComplete }: { onComplete: () => void }) {
       adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, (e: any) => {
         adsManager = e.getAdsManager(adVideoRef.current);
         adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, onComplete);
-        amsManager.addEventListener(google.ima.AdEvent.Type.SKIPPED, onComplete);
+        adsManager.addEventListener(google.ima.AdEvent.Type.SKIPPED, onComplete);
         adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onComplete);
         try {
-          adsManager.init(640, 360, google.ima.ViewMode.NORMAL);
+          adsManager.init(adContainerRef.current!.offsetWidth || 640, adContainerRef.current!.offsetHeight || 360, google.ima.ViewMode.NORMAL);
           adsManager.start();
           imaRef.current = adsManager;
         } catch { onComplete(); }
@@ -85,7 +85,14 @@ function AdOverlay({ onComplete }: { onComplete: () => void }) {
     }, 1000);
 
     if ((window as any).google?.ima) initIMA();
-    else setTimeout(initIMA, 1000);
+    else {
+      // IMA SDK ачаалагдаагүй бол 1.5с хүлээгээд дахин оролдоно
+      const retry = setTimeout(() => {
+        if ((window as any).google?.ima) initIMA();
+        // Хэрэв IMA байхгүй бол countdown дуусахад алгасна (fallback)
+      }, 1500);
+      return () => { clearTimeout(retry); clearInterval(timer); adsManager?.destroy(); };
+    }
 
     return () => { clearInterval(timer); adsManager?.destroy(); };
   }, [onComplete]);
