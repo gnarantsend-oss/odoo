@@ -1,0 +1,16 @@
+name: Update lockfile
+on: workflow_dispatch
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: |
+          git config user.email "bot@github.com"
+          git config user.name "GitHub Actions"
+          git add bun.lock
+          git commit -m "fix: update bun.lock" || echo "No changes"
+          git push
