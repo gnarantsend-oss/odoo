@@ -18,6 +18,7 @@ const navItems = [
 ];
 
 const mongolItem = { name: 'Монгол', href: '/mongol' };
+const dramaItem = { name: 'Drama', href: 'https://progressmagnify.com/kb06gx6fqy?key=5de40f0f2fb290453196572a5df548df' };
 
 function HeaderNavigation({ isMobile, onLinkClick }: { isMobile?: boolean; onLinkClick?: () => void }) {
   const pathname = usePathname();
@@ -67,6 +68,11 @@ function HeaderNavigation({ isMobile, onLinkClick }: { isMobile?: boolean; onLin
             {mongolItem.name}
           </Button>
         </Link>
+        <a href={dramaItem.href} target="_blank" rel="noopener noreferrer" onClick={onLinkClick} className="w-full">
+          <Button variant="ghost" className='w-full justify-start text-pink-400'>
+            {dramaItem.name}
+          </Button>
+        </a>
       </nav>
     );
   }
@@ -103,6 +109,15 @@ function HeaderNavigation({ isMobile, onLinkClick }: { isMobile?: boolean; onLin
           {mongolItem.name}
         </Button>
       </Link>
+      <a href={dramaItem.href} target="_blank" rel="noopener noreferrer">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="transition-colors rounded-full font-bold text-pink-400/80 hover:text-pink-400"
+        >
+          {dramaItem.name}
+        </Button>
+      </a>
     </nav>
   );
 }
