@@ -5,6 +5,7 @@ import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
+  compress: true,
   images: {
     // Cloudflare Workers дээр Next.js built-in image optimization
     // дэмжигдэхгүй тул unoptimized: true байна
