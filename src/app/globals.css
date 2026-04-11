@@ -82,41 +82,7 @@
   }
 }
 
-:root, .dark {
-  --background:            hsl(228 50% 3.5%);
-  --foreground:            hsl(210 40% 96%);
-  --card:                  hsl(228 45% 7% / 0.80);
-  --card-foreground:       hsl(210 40% 96%);
-  --popover:               hsl(228 50% 5%);
-  --popover-foreground:    hsl(210 40% 96%);
-  --primary:               hsl(192 96% 58%);
-  --primary-foreground:    hsl(228 50% 3.5%);
-  --secondary:             hsl(228 40% 12% / 0.85);
-  --secondary-foreground:  hsl(210 40% 90%);
-  --muted:                 hsl(228 40% 10%);
-  --muted-foreground:      hsl(220 18% 55%);
-  --accent:                hsl(225 60% 16% / 0.75);
-  --accent-foreground:     hsl(192 96% 75%);
-  --destructive:           hsl(0 62% 35%);
-  --destructive-foreground: hsl(210 40% 96%);
-  --border:                hsl(228 40% 16% / 0.55);
-  --input:                 hsl(228 40% 14% / 0.80);
-  --ring:                  hsl(192 96% 58%);
-  --chart-1: hsl(192 96% 58%);
-  --chart-2: hsl(260 80% 65%);
-  --chart-3: hsl(30  80% 56%);
-  --chart-4: hsl(340 75% 60%);
-  --chart-5: hsl(150 65% 50%);
-  --radius: 0.75rem;
-  --sidebar-background:         hsl(228 48% 5.5% / 0.92);
-  --sidebar-foreground:         hsl(210 40% 90%);
-  --sidebar-primary:            hsl(192 96% 58%);
-  --sidebar-primary-foreground: hsl(228 50% 3.5%);
-  --sidebar-accent:             hsl(228 40% 12%);
-  --sidebar-accent-foreground:  hsl(210 40% 90%);
-  --sidebar-border:             hsl(228 40% 16% / 0.45);
-  --sidebar-ring:               hsl(192 96% 58%);
-}
+
 
 @layer base {
   * { @apply border-border outline-ring/50; }
@@ -141,7 +107,8 @@
   position: absolute; width: 140%; height: 140%; top: -30%; left: -25%;
   border-radius: 43% 57% 61% 39% / 47% 53% 47% 53%;
   background: radial-gradient(ellipse 60% 55% at 40% 45%,
-    hsl(220 80% 12% / 0.80) 0%, hsl(228 65% 6% / 0.45) 55%, transparent 80%);
+    color-mix(in srgb, var(--background) 0%, hsl(220 80% 12% / 0.80)) 0%,
+    color-mix(in srgb, var(--background) 30%, transparent) 55%, transparent 80%);
   animation: blobDrift 30s ease-in-out infinite;
   will-change: transform;
 }
@@ -150,15 +117,14 @@
   position: absolute; width: 120%; height: 120%; bottom: -30%; right: -20%;
   border-radius: 62% 38% 45% 55% / 55% 45% 55% 45%;
   background: radial-gradient(ellipse 55% 60% at 60% 55%,
-    hsl(210 90% 10% / 0.75) 0%, hsl(228 70% 5% / 0.40) 55%, transparent 80%);
+    color-mix(in srgb, var(--background) 0%, hsl(210 90% 10% / 0.75)) 0%,
+    color-mix(in srgb, var(--background) 30%, transparent) 55%, transparent 80%);
   animation: blobDriftR 23s ease-in-out infinite;
   will-change: transform;
 }
 .wave-blob-accent {
   position: absolute; width: 80%; height: 80%; top: 10%; left: 10%;
   border-radius: 50% 50% 60% 40% / 60% 40% 60% 40%;
-  background: radial-gradient(ellipse 40% 35% at 50% 50%,
-    hsl(192 96% 18% / 0.14) 0%, transparent 75%);
   animation: blobSlow 42s linear infinite;
   will-change: transform;
 }
@@ -174,7 +140,7 @@
   will-change: transform;
 }
 .card-3d:hover {
-  box-shadow: 0 28px 70px rgba(0,0,0,0.65), 0 0 45px rgba(56,208,240,0.10);
+  box-shadow: 0 28px 70px rgba(0,0,0,0.65), 0 0 45px color-mix(in srgb, var(--primary) 10%, transparent);
 }
 .card-3d-shine {
   position: absolute; inset: 0; border-radius: inherit;
@@ -189,33 +155,30 @@
 
 /* ── Glass ── */
 .glass {
-  background: hsl(228 45% 8% / 0.60);
+  background: color-mix(in srgb, var(--background) 60%, transparent);
   backdrop-filter: blur(18px) saturate(160%);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid hsl(228 40% 28% / 0.28);
-  box-shadow: 0 4px 28px hsl(228 60% 3% / 0.55),
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 28px color-mix(in srgb, var(--background) 55%, transparent),
               inset 0 1px 0 hsl(210 80% 80% / 0.05);
 }
 .glass-sm {
-  background: hsl(228 45% 8% / 0.50);
+  background: color-mix(in srgb, var(--background) 50%, transparent);
   backdrop-filter: blur(10px) saturate(140%);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
-  border: 1px solid hsl(228 40% 28% / 0.22);
+  border: 1px solid var(--border);
 }
 
 /* ── Header ── */
 header {
-  background: hsl(228 50% 4% / 0.72) !important;
+  background: color-mix(in srgb, var(--background) 72%, transparent) !important;
   backdrop-filter: blur(22px) saturate(160%);
   -webkit-backdrop-filter: blur(22px) saturate(160%);
-  border-bottom-color: hsl(228 40% 20% / 0.38) !important;
-  box-shadow: 0 1px 0 hsl(192 96% 58% / 0.05);
+  border-bottom-color: var(--border) !important;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--primary) 5%, transparent);
 }
 
-/* ── Glow ── */
-.glow-primary { box-shadow: 0 0 22px hsl(192 96% 58% / 0.28); transition: box-shadow 0.22s ease; }
-.glow-primary:hover { box-shadow: 0 0 40px hsl(192 96% 58% / 0.50); }
-.text-glow { text-shadow: 0 0 30px hsl(192 96% 58% / 0.40); }
+/* ── Glow (theme-aware — defined at bottom with var(--primary)) ── */
 
 /* ── Hero animate-in ── */
 .hero-badge-anim { animation: fadeUp 0.7s ease forwards; }
@@ -224,16 +187,16 @@ header {
 .hero-btns-anim   { animation: fadeUp 0.7s ease 0.40s both; }
 
 /* ── Watch progress bar ── */
-.watch-progress { height: 2.5px; border-radius: 2px; background: hsl(228 40% 20%); overflow: hidden; }
+.watch-progress { height: 2.5px; border-radius: 2px; background: var(--border); overflow: hidden; }
 .watch-progress-fill {
   height: 100%; border-radius: 2px;
-  background: linear-gradient(to right, hsl(192 96% 58%), hsl(225 80% 65%));
+  background: linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary) 70%, hsl(265 80% 65%)));
 }
 
 /* ── Skeleton ── */
 .skeleton {
   background: linear-gradient(90deg,
-    hsl(228 40% 10%) 0%, hsl(228 40% 15%) 50%, hsl(228 40% 10%) 100%);
+    var(--muted) 0%, var(--secondary) 50%, var(--muted) 100%);
   background-size: 600px 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius);
@@ -241,13 +204,12 @@ header {
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar        { width: 5px; height: 5px; }
-::-webkit-scrollbar-track  { background: hsl(228 50% 4%); }
-::-webkit-scrollbar-thumb  { background: hsl(228 40% 20%); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(192 96% 42%); }
+::-webkit-scrollbar-track  { background: var(--background); }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 9999px; }
 
 /* ── Selection & Focus ── */
-::selection { background: hsl(192 96% 58% / 0.28); color: hsl(210 40% 96%); }
-:focus-visible { outline: 2px solid hsl(192 96% 58% / 0.65); outline-offset: 2px; border-radius: 4px; }
+::selection { background: color-mix(in srgb, var(--primary) 28%, transparent); color: var(--foreground); }
+:focus-visible { outline: 2px solid color-mix(in srgb, var(--ring) 65%, transparent); outline-offset: 2px; border-radius: 4px; }
 
 /* ══════════════════════════════════════════
    NARHAN TV — 5 THEME SYSTEM
