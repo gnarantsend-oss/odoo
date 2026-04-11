@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Disclaimer',
-  description: 'Disclaimer for MZtv. This website does not host or store any video, image, or manga files on its servers.',
+  description: 'Disclaimer for Narhan TV. This website does not host or store any video, image, or manga files on its servers.',
   robots: {
     index: false,
     follow: false,

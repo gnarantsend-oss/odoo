@@ -24,13 +24,13 @@ function useFluctuatingCount(base: number, variance: number, intervalMs: number)
 
 export default function AdvertiseBanner() {
   const online = useFluctuatingCount(30500, 12, 2200);
-  const [prevCount, setPrevCount] = useState(30500);
+  const prevCountRef = useRef(30500);
   const [trend, setTrend] = useState<'up' | 'down'>('up');
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setTrend(online > prevCount ? 'up' : 'down');
-    setPrevCount(online);
+    setTrend(online > prevCountRef.current ? 'up' : 'down');
+    prevCountRef.current = online;
   }, [online]);
 
   useEffect(() => {
@@ -194,20 +194,20 @@ export default function AdvertiseBanner() {
             boxShadow: '0 0 0 1px rgba(73,198,229,0.2), 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(73,198,229,0.1)',
           }}>
             {/* Corner accents */}
-            {[['0','0'],['auto','0'],['0','auto'],['auto','auto']].map(([t,b], i) => (
+            {([
+              { top: '-3px', bottom: 'auto', left: '-3px', right: 'auto', borderRadius: '4px 0 0 0', borderRight: 'none',                     borderBottom: 'none'                     },
+              { top: '-3px', bottom: 'auto', left: 'auto', right: '-3px', borderRadius: '0 4px 0 0', borderLeft:  'none',                     borderBottom: 'none'                     },
+              { top: 'auto', bottom: '-3px', left: '-3px', right: 'auto', borderRadius: '0 0 0 4px', borderRight: 'none',                     borderTop:    'none'                     },
+              { top: 'auto', bottom: '-3px', left: 'auto', right: '-3px', borderRadius: '0 0 4px 0', borderLeft:  'none',                     borderTop:    'none'                     },
+            ] as const).map((corner, i) => (
               <div key={i} style={{
                 position: 'absolute',
-                top: t === '0' ? '-3px' : 'auto',
-                bottom: b === '0' ? '-3px' : 'auto', // This logic is wrong, fix:
-                left: i % 2 === 0 ? '-3px' : 'auto',
-                right: i % 2 === 1 ? '-3px' : 'auto',
+                top: corner.top, bottom: corner.bottom,
+                left: corner.left, right: corner.right,
                 width: '16px', height: '16px',
                 border: '2.5px solid #49C6E5',
-                borderRadius: i === 0 ? '4px 0 0 0' : i === 1 ? '0 4px 0 0' : i === 2 ? '0 0 0 4px' : '0 0 4px 0',
-                borderRight: i % 2 === 0 ? 'none' : '2.5px solid #49C6E5',
-                borderBottom: i < 2 ? 'none' : '2.5px solid #49C6E5',
-                borderLeft: i % 2 === 0 ? '2.5px solid #49C6E5' : 'none',
-                borderTop: i < 2 ? '2.5px solid #49C6E5' : 'none',
+                borderRadius: corner.borderRadius,
+                ...corner,
               }}/>
             ))}
 

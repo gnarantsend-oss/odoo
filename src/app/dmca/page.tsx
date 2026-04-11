@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'DMCA Notice & Takedown Policy',
-  description: 'DMCA Notice & Takedown Policy for MZtv. How to file a copyright infringement notice.',
+  description: 'DMCA Notice & Takedown Policy for Narhan TV. How to file a copyright infringement notice.',
   robots: {
     index: false,
     follow: false,
@@ -31,7 +31,7 @@ export default function DMCAPage() {
               Upon valid notice, we will remove or disable access to the material.
             </p>
             <p>
-              Contact: <a href="mailto:parthaforwork@outlook.com" className="text-primary hover:underline">parthaforwork@outlook.com</a>
+              Contact: <a href="mailto:admin@narhantv.com" className="text-primary hover:underline">admin@narhantv.com</a>
             </p>
           </div>
           <div className="mt-12 text-center">

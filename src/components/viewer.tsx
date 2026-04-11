@@ -7,7 +7,6 @@ import Link from 'next/link';
 
 import { type ViewerMedia } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn, slugify } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -110,7 +109,7 @@ export default function Viewer({ media, initialItemNumber, initialSeasonNumber =
             )}
             {isAnime && (
               <div className="flex items-center space-x-2">
-                <Label htmlFor="dub-toggle" className={isManga ? 'text-foreground' : ''}>Dub</Label>
+                <label htmlFor="dub-toggle" className="text-sm font-medium leading-none">Dub</label>
                 <Switch id="dub-toggle" checked={isDub} onCheckedChange={setIsDub} />
               </div>
             )}

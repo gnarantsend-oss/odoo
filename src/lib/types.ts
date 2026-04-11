@@ -111,7 +111,7 @@ export type ViewerMedia = {
   id: number;
   imdb_id?: string;
   title: { english: string | null; romaji: string };
-  type: 'ANIME' | 'MANGA';
+  type: 'ANIME' | 'MANGA' | 'MOVIE' | 'TV';
   episodes: number | null;
   chapters: number | null;
   description: string;

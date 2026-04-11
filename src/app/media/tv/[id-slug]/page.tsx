@@ -1,6 +1,4 @@
-export const runtime = 'edge';
-
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
 import { fetchTVShowById, getTMDBImageUrl } from '@/lib/tmdb';
 import { type Metadata } from 'next';
@@ -112,7 +110,7 @@ export default async function TVShowDetailsPage({ params }: Props) {
   const actualSlug = idSlug.substring(id.toString().length + 1);
 
   if (actualSlug !== expectedSlug) {
-    // Optional: Redirect to canonical URL
+    redirect(`/media/tv/${show.id}-${expectedSlug}`);
   }
 
   const title = show.name;

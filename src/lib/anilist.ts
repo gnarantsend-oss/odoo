@@ -76,8 +76,8 @@ async function anilistFetch(query: string, variables: object) {
   );
 
   try {
-    // Cloudflare Cache API-аас хайна
-    const cache = (caches as any).default;
+    // Cloudflare Cache API-аас хайна (build үед байхгүй тул шалгана)
+    const cache = typeof caches !== 'undefined' ? (caches as any).default : null;
     if (cache) {
       const cached = await cache.match(cacheKey);
       if (cached) {

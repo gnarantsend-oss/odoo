@@ -6,15 +6,17 @@ import { Suspense, useState } from 'react';
 import { MZtvLogo } from '@/components/icons';
 import { SearchBar } from '@/components/search-bar';
 import { cn } from '@/lib/utils';
+import { ThemeSwitcher } from './theme-switcher';
 import { Button } from './ui/button';
 import { Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 
 const navItems = [
-  { name: 'Anime', tab: 'anime' },
-  { name: 'Manga', tab: 'manga' },
-  { name: 'Movies', tab: 'movies' },
-  { name: 'TV Shows', tab: 'tv' },
+  { name: 'Anime',   tab: 'anime' },
+  { name: 'Manga',   tab: 'manga' },
+  { name: 'Movies',  tab: 'movies' },
+  { name: 'TV Shows',tab: 'tv' },
+  { name: '🇲🇳 Монгол', tab: 'mongol' },
 ];
 
 const mongolItem = { name: 'Монгол', href: '/mongol' };
@@ -167,6 +169,7 @@ export default function Header() {
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <SearchBar />
           </div>
+          <ThemeSwitcher />
           <MobileNav />
         </div>
       </div>

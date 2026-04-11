@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { Home, Clock, Shuffle, Download } from 'lucide-react';
+import { Home, Film, Tv, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV = [
-  { label: 'Home',     href: '/',              icon: Home,    exact: true  },
-  { label: 'Movies',   href: '/?tab=movies',   icon: Clock,   exact: false },
-  { label: 'Anime',    href: '/?tab=anime',    icon: Shuffle, exact: false },
-  { label: 'Монгол',   href: '/?tab=mongol',   icon: Download,exact: false },
+  { label: 'Home',     href: '/',              icon: Home,   exact: true  },
+  { label: 'Movies',   href: '/?tab=movies',   icon: Film,   exact: false },
+  { label: 'Anime',    href: '/?tab=anime',    icon: Tv,     exact: false },
+  { label: 'Монгол',   href: '/?tab=mongol',   icon: Globe,  exact: false },
 ];
 
 function MobileNavInner() {

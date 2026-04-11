@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 import { notFound } from 'next/navigation';
 import { fetchMovieById, getTMDBImageUrl } from '@/lib/tmdb';
 import type { Metadata, ResolvingMetadata } from 'next';
@@ -56,7 +54,7 @@ export default async function ViewPage({ params }: Props) {
     id: movie.id,
     imdb_id: movie.imdb_id,
     title: { english: movie.title, romaji: movie.original_title },
-    type: 'ANIME',
+    type: 'MOVIE',
     episodes: 1,
     chapters: null,
     description: movie.overview,

@@ -8,11 +8,10 @@ import Link from 'next/link';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Search, X, Loader2, Tv, Clapperboard, Book, Film } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverAnchor } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
 import { fetchFromAniList } from '@/lib/anilist';
-import { fetchFromTMDB } from '@/lib/tmdb';
-import { getTMDBImageUrl } from '@/lib/tmdb';
+import { fetchFromTMDB, getTMDBImageUrl } from '@/lib/tmdb';
 import { type Media, type Movie, type TVShow } from '@/lib/types';
 import { slugify, cn } from '@/lib/utils';
 

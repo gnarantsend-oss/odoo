@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { fetchMediaById } from '@/lib/anilist';

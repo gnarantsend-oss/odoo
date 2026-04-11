@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of Use',
-  description: 'Terms of Use for MZtv. By accessing this website, you agree to these terms.',
+  description: 'Terms of Use for Narhan TV. By accessing this website, you agree to these terms.',
   robots: {
     index: false,
     follow: false,
@@ -26,7 +26,7 @@ export default function TermsPage() {
               <li>We are not affiliated with, endorsed by, or connected to any production companies or content providers.</li>
               <li>We make no warranties about the completeness, reliability, or accuracy of information displayed here.</li>
               <li>We reserve the right to remove or block any content upon valid copyright request.</li>
-              <li>Any legal disputes shall be governed by the laws of India and subject to the exclusive jurisdiction of the courts in India.</li>
+              <li>Any legal disputes shall be governed by the laws of Mongolia and subject to the exclusive jurisdiction of the courts in Mongolia.</li>
             </ol>
           </div>
           <div className="mt-12 text-center">

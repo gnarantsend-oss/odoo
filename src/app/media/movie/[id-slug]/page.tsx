@@ -1,6 +1,4 @@
-export const runtime = 'edge';
-
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
 import { fetchMovieById, getTMDBImageUrl } from '@/lib/tmdb';
 import { type Metadata } from 'next';
@@ -64,7 +62,7 @@ export default async function MovieDetailsPage({ params }: Props) {
   const actualSlug = idSlug.substring(id.toString().length + 1);
 
   if (actualSlug !== expectedSlug) {
-    // Optional: Redirect to canonical URL
+    redirect(`/media/movie/${movie.id}-${expectedSlug}`);
   }
 
   const title = movie.title;

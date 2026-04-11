@@ -19,7 +19,7 @@ const DRAMAS = [
 
 function DramaCard({ drama }: { drama: typeof DRAMAS[0] }) {
   return (
-    <Link href={`/?tab=shows&q=${encodeURIComponent(drama.title)}`}>
+    <Link href={`/?tab=tv&q=${encodeURIComponent(drama.title)}`}>
       <div className="group cursor-pointer rounded-lg overflow-hidden bg-card border border-border/40 hover:border-primary/50 transition-all duration-200 hover:scale-[1.02]">
         <div className="relative aspect-[2/3] overflow-hidden">
           <Image
@@ -51,10 +51,6 @@ function DramaCard({ drama }: { drama: typeof DRAMAS[0] }) {
 }
 
 export default function KDramaPage() {
-  useEffect(() => {
-    document.title = 'K-Drama | Narhan TV';
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
       <Header />

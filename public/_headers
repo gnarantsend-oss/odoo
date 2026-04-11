@@ -1,14 +1,11 @@
-/
-  Cache-Control: public, max-age=0, must-revalidate
-
+# Cloudflare Workers — Static Asset Cache Headers
+# _next/static дотор байх JS, CSS файлуудыг 1 жил cache хийнэ
 /_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 
-/logo.*
-  Cache-Control: public, max-age=31536000, immutable
+# Зураг болон бусад public asset-ийг 1 өдөр cache хийнэ
+/logo.png
+  Cache-Control: public, max-age=86400
 
 /*.json
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/*.svg
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=3600
