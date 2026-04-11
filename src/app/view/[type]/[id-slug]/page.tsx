@@ -57,8 +57,8 @@ export default function ViewPage() {
 
   return (
     <>
-      <JsonLd media={media} type={type} itemNumber={initialItemNumber} />
-      <Viewer media={media} initialItemNumber={initialItemNumber} type={type} />
+      <JsonLd media={media} type={type as "anime" | "manga"} itemNumber={initialItemNumber} />
+      <Viewer media={media} initialItemNumber={initialItemNumber} type={type as "anime" | "manga"} />
     </>
   );
 }
