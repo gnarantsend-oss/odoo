@@ -49,23 +49,23 @@ function AdOverlay({ onComplete }: { onComplete: () => void }) {
     // VAST XML татаж, MediaFile URL олох
     const fetchVast = async () => {
       try {
-        const res = await fetch(VAST_URL);
+        const res = await fetch(VAST_URL, { mode: 'cors' });
         const text = await res.text();
         const parser = new DOMParser();
         const xml = parser.parseFromString(text, 'text/xml');
-        // MediaFile URL олох
         const mediaFiles = xml.querySelectorAll('MediaFile');
         let bestUrl = '';
+        // mp4, webm, ямар ч видео формат хүлээн авна
         mediaFiles.forEach((mf) => {
+          const content = mf.textContent?.trim().replace(/^<!\[CDATA\[|\]\]>$/g, '').trim() || '';
+          if (content.startsWith('http') && !bestUrl) bestUrl = content;
+          // mp4 олдвол давуу эрх өгнө
           const type = mf.getAttribute('type') || '';
-          if (type.includes('mp4') || type.includes('video')) {
-            bestUrl = mf.textContent?.trim() || '';
-          }
+          if (type.includes('mp4') && content.startsWith('http')) bestUrl = content;
         });
         if (!bestUrl) {
-          // CDATA эсвэл ямар ч MediaFile олдохгүй бол
-          const match = text.match(/<MediaFile[^>]*>\s*(?:<!\[CDATA\[)?(https?:\/\/[^\s<\]]+)/);
-          if (match) bestUrl = match[1];
+          const match = text.match(/https?:\/\/[^\s<"\]]+\.(mp4|webm|ogg)[^\s<"\]]*/i);
+          if (match) bestUrl = match[0];
         }
         if (bestUrl) {
           setVideoUrl(bestUrl);
