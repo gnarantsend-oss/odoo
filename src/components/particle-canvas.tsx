@@ -28,6 +28,7 @@ export default function ParticleCanvas({ className = '', count = 30 }: { classNa
     }
 
     function resize() {
+      if (!canvas) return;
       W = canvas.offsetWidth; H = canvas.offsetHeight;
       canvas.width = W; canvas.height = H;
       init();
