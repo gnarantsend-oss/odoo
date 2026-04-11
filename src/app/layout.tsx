@@ -5,8 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import DisclaimerModal from '@/components/disclaimer-modal';
-import dynamic from 'next/dynamic';
-const ParticleCanvas = dynamic(() => import('@/components/particle-canvas'), { ssr: false });
+import ParticleCanvas from '@/components/particle-canvas';
 import { ThemeProvider } from '@/components/theme-provider';
 import MobileNav from '@/components/mobile-nav';
 

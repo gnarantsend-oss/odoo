@@ -11,8 +11,7 @@ import TvGrid from '@/components/tv-grid';
 import HeroCarousel from '@/components/hero-carousel';
 import MovieHeroCarousel from '@/components/movie-hero-carousel';
 import TvHeroCarousel from '@/components/tv-hero-carousel';
-import dynamic from 'next/dynamic';
-const AdvertiseBanner = dynamic(() => import('@/components/advertise-banner'), { ssr: false });
+import AdvertiseBanner from '@/components/advertise-banner';
 import MongolTab from '@/components/mongol-tab';
 
 export default async function Home({
