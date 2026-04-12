@@ -22,7 +22,6 @@ const CATEGORIES = [
   { key: 'drama',   label: '🎭 Драм' },
   { key: 'horror',  label: '👻 Хорор' },
   { key: 'comedy',  label: '😂 Комеди' },
-  { key: 'serial',  label: '📺 Сериал' },
   { key: 'trailer', label: '🎬 Трейлер' },
 ];
 
@@ -58,6 +57,7 @@ function MongolHero({ movies }: { movies: MongolMovie[] }) {
       <div key={movie.id} className="absolute inset-0 transition-opacity duration-300"
            style={{ opacity: fading ? 0 : 1 }}>
         <img src={movie.poster} alt={movie.name}
+          loading="eager"
           className="absolute inset-0 w-full h-full object-cover object-center"
           style={{ opacity: 0.55 }} />
       </div>
@@ -178,9 +178,9 @@ function MongolCard({ movie }: { movie: MongolMovie }) {
         onMouseLeave={() => setPreview(false)}
         onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel}
         draggable={false}>
-        <Image src={movie.poster} alt={movie.name} fill className="object-cover" unoptimized />
+        <Image src={movie.poster} alt={movie.name} fill className="object-cover" unoptimized loading="lazy" />
         {movie.preview && preview && (
-          <img src={movie.preview} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={movie.preview} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent
                         opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
