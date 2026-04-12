@@ -1,0 +1,379 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-sans: var(--font-nunito), sans-serif;
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down { from { height: 0; } to { height: var(--radix-accordion-content-height); } }
+  @keyframes accordion-up   { from { height: var(--radix-accordion-content-height); } to { height: 0; } }
+
+
+  @keyframes shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position:  600px 0; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes heroZoom {
+    from { transform: scale(1.02); }
+    to   { transform: scale(1); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.94); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+}
+
+
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-nunito), Arial, sans-serif;
+  }
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration { -webkit-appearance: none; }
+}
+
+
+
+/* ── 3D Card ── */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.09s ease, box-shadow 0.22s ease;
+  will-change: transform;
+}
+.card-3d:hover {
+  box-shadow: 0 28px 70px rgba(0,0,0,0.65), 0 0 45px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+.card-3d-shine {
+  position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; z-index: 10;
+  transition: background 0.09s;
+}
+.card-3d-content {
+  position: relative;
+  transform: translateZ(20px);
+  transform-style: preserve-3d;
+}
+
+/* ── Glass ── */
+.glass {
+  background: color-mix(in srgb, var(--background) 60%, transparent);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 28px color-mix(in srgb, var(--background) 55%, transparent),
+              inset 0 1px 0 hsl(210 80% 80% / 0.05);
+}
+.glass-sm {
+  background: color-mix(in srgb, var(--background) 50%, transparent);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--border);
+}
+
+/* ── Header ── */
+header {
+  background: color-mix(in srgb, var(--background) 72%, transparent) !important;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border-bottom-color: var(--border) !important;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--primary) 5%, transparent);
+}
+
+/* ── Glow (theme-aware — defined at bottom with var(--primary)) ── */
+
+/* ── Hero animate-in ── */
+.hero-badge-anim { animation: fadeUp 0.7s ease forwards; }
+.hero-title-anim  { animation: fadeUp 0.7s ease 0.15s both; }
+.hero-meta-anim   { animation: fadeUp 0.7s ease 0.28s both; }
+.hero-btns-anim   { animation: fadeUp 0.7s ease 0.40s both; }
+
+/* ── Watch progress bar ── */
+.watch-progress { height: 2.5px; border-radius: 2px; background: var(--border); overflow: hidden; }
+.watch-progress-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary) 70%, hsl(265 80% 65%)));
+}
+
+/* ── Skeleton ── */
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--muted) 0%, var(--secondary) 50%, var(--muted) 100%);
+  background-size: 600px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: var(--background); }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 9999px; }
+
+/* ── Selection & Focus ── */
+::selection { background: color-mix(in srgb, var(--primary) 28%, transparent); color: var(--foreground); }
+:focus-visible { outline: 2px solid color-mix(in srgb, var(--ring) 65%, transparent); outline-offset: 2px; border-radius: 4px; }
+
+/* ══════════════════════════════════════════
+   NARHAN TV — 5 THEME SYSTEM
+   ══════════════════════════════════════════ */
+
+/* ── 1. ABYSS (default) — Deep Ocean Cyan ── */
+:root,
+[data-theme="abyss"] {
+  --background:            hsl(228 50% 3.5%);
+  --foreground:            hsl(210 40% 96%);
+  --card:                  hsl(228 45% 7% / 0.80);
+  --card-foreground:       hsl(210 40% 96%);
+  --popover:               hsl(228 50% 5%);
+  --popover-foreground:    hsl(210 40% 96%);
+  --primary:               hsl(192 96% 58%);
+  --primary-foreground:    hsl(228 50% 3.5%);
+  --secondary:             hsl(228 40% 12% / 0.85);
+  --secondary-foreground:  hsl(210 40% 90%);
+  --muted:                 hsl(228 40% 10%);
+  --muted-foreground:      hsl(220 18% 55%);
+  --accent:                hsl(225 60% 16% / 0.75);
+  --accent-foreground:     hsl(192 96% 75%);
+  --destructive:           hsl(0 62% 35%);
+  --border:                hsl(228 40% 16% / 0.55);
+  --input:                 hsl(228 40% 14% / 0.80);
+  --ring:                  hsl(192 96% 58%);
+  --sidebar-background:    hsl(228 48% 5.5% / 0.92);
+  --sidebar-foreground:    hsl(210 40% 90%);
+  --sidebar-primary:       hsl(192 96% 58%);
+  --sidebar-primary-foreground: hsl(228 50% 3.5%);
+  --sidebar-accent:        hsl(228 40% 12%);
+  --sidebar-accent-foreground: hsl(210 40% 90%);
+  --sidebar-border:        hsl(228 40% 16% / 0.45);
+  --sidebar-ring:          hsl(192 96% 58%);
+  --theme-scroll-hover:    hsl(192 96% 42%);
+}
+
+/* ── 2. CRIMSON — Netflix Red ── */
+[data-theme="crimson"] {
+  --background:            hsl(0 50% 3%);
+  --foreground:            hsl(0 10% 96%);
+  --card:                  hsl(0 40% 7% / 0.85);
+  --card-foreground:       hsl(0 10% 96%);
+  --popover:               hsl(0 45% 5%);
+  --popover-foreground:    hsl(0 10% 96%);
+  --primary:               hsl(358 90% 48%);
+  --primary-foreground:    hsl(0 0% 100%);
+  --secondary:             hsl(0 35% 11% / 0.85);
+  --secondary-foreground:  hsl(0 10% 88%);
+  --muted:                 hsl(0 35% 9%);
+  --muted-foreground:      hsl(0 12% 52%);
+  --accent:                hsl(0 50% 14% / 0.75);
+  --accent-foreground:     hsl(358 90% 72%);
+  --destructive:           hsl(0 80% 40%);
+  --border:                hsl(0 40% 16% / 0.55);
+  --input:                 hsl(0 40% 12% / 0.80);
+  --ring:                  hsl(358 90% 48%);
+  --sidebar-background:    hsl(0 45% 4% / 0.92);
+  --sidebar-foreground:    hsl(0 10% 88%);
+  --sidebar-primary:       hsl(358 90% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent:        hsl(0 35% 11%);
+  --sidebar-accent-foreground: hsl(0 10% 88%);
+  --sidebar-border:        hsl(0 40% 16% / 0.45);
+  --sidebar-ring:          hsl(358 90% 48%);
+  --theme-scroll-hover:    hsl(358 90% 42%);
+}
+
+/* ── 3. AURORA — Northern Lights Purple ── */
+[data-theme="aurora"] {
+  --background:            hsl(265 50% 3.5%);
+  --foreground:            hsl(265 20% 96%);
+  --card:                  hsl(265 42% 7% / 0.82);
+  --card-foreground:       hsl(265 20% 96%);
+  --popover:               hsl(265 48% 5%);
+  --popover-foreground:    hsl(265 20% 96%);
+  --primary:               hsl(262 83% 72%);
+  --primary-foreground:    hsl(265 50% 3.5%);
+  --secondary:             hsl(265 38% 12% / 0.85);
+  --secondary-foreground:  hsl(265 20% 90%);
+  --muted:                 hsl(265 38% 10%);
+  --muted-foreground:      hsl(265 16% 54%);
+  --accent:                hsl(265 55% 16% / 0.75);
+  --accent-foreground:     hsl(262 83% 85%);
+  --destructive:           hsl(0 62% 35%);
+  --border:                hsl(265 40% 17% / 0.55);
+  --input:                 hsl(265 40% 13% / 0.80);
+  --ring:                  hsl(262 83% 72%);
+  --sidebar-background:    hsl(265 46% 5% / 0.92);
+  --sidebar-foreground:    hsl(265 20% 90%);
+  --sidebar-primary:       hsl(262 83% 72%);
+  --sidebar-primary-foreground: hsl(265 50% 3.5%);
+  --sidebar-accent:        hsl(265 38% 12%);
+  --sidebar-accent-foreground: hsl(265 20% 90%);
+  --sidebar-border:        hsl(265 40% 17% / 0.45);
+  --sidebar-ring:          hsl(262 83% 72%);
+  --theme-scroll-hover:    hsl(262 83% 58%);
+}
+
+/* ── 4. EMBER — Fire Orange ── */
+[data-theme="ember"] {
+  --background:            hsl(20 50% 3%);
+  --foreground:            hsl(30 20% 96%);
+  --card:                  hsl(20 42% 7% / 0.82);
+  --card-foreground:       hsl(30 20% 96%);
+  --popover:               hsl(20 48% 5%);
+  --popover-foreground:    hsl(30 20% 96%);
+  --primary:               hsl(25 95% 55%);
+  --primary-foreground:    hsl(20 50% 3%);
+  --secondary:             hsl(20 38% 11% / 0.85);
+  --secondary-foreground:  hsl(30 20% 90%);
+  --muted:                 hsl(20 38% 9%);
+  --muted-foreground:      hsl(25 14% 52%);
+  --accent:                hsl(20 55% 15% / 0.75);
+  --accent-foreground:     hsl(25 95% 75%);
+  --destructive:           hsl(0 62% 35%);
+  --border:                hsl(20 40% 16% / 0.55);
+  --input:                 hsl(20 40% 12% / 0.80);
+  --ring:                  hsl(25 95% 55%);
+  --sidebar-background:    hsl(20 46% 4% / 0.92);
+  --sidebar-foreground:    hsl(30 20% 90%);
+  --sidebar-primary:       hsl(25 95% 55%);
+  --sidebar-primary-foreground: hsl(20 50% 3%);
+  --sidebar-accent:        hsl(20 38% 11%);
+  --sidebar-accent-foreground: hsl(30 20% 90%);
+  --sidebar-border:        hsl(20 40% 16% / 0.45);
+  --sidebar-ring:          hsl(25 95% 55%);
+  --theme-scroll-hover:    hsl(25 95% 46%);
+}
+
+/* ── 5. FOREST — Emerald Green ── */
+[data-theme="forest"] {
+  --background:            hsl(152 50% 3%);
+  --foreground:            hsl(152 15% 96%);
+  --card:                  hsl(152 42% 6% / 0.82);
+  --card-foreground:       hsl(152 15% 96%);
+  --popover:               hsl(152 48% 4%);
+  --popover-foreground:    hsl(152 15% 96%);
+  --primary:               hsl(158 75% 50%);
+  --primary-foreground:    hsl(152 50% 3%);
+  --secondary:             hsl(152 35% 10% / 0.85);
+  --secondary-foreground:  hsl(152 15% 88%);
+  --muted:                 hsl(152 35% 8%);
+  --muted-foreground:      hsl(152 14% 52%);
+  --accent:                hsl(152 50% 13% / 0.75);
+  --accent-foreground:     hsl(158 75% 72%);
+  --destructive:           hsl(0 62% 35%);
+  --border:                hsl(152 38% 15% / 0.55);
+  --input:                 hsl(152 38% 11% / 0.80);
+  --ring:                  hsl(158 75% 50%);
+  --sidebar-background:    hsl(152 45% 4% / 0.92);
+  --sidebar-foreground:    hsl(152 15% 88%);
+  --sidebar-primary:       hsl(158 75% 50%);
+  --sidebar-primary-foreground: hsl(152 50% 3%);
+  --sidebar-accent:        hsl(152 35% 10%);
+  --sidebar-accent-foreground: hsl(152 15% 88%);
+  --sidebar-border:        hsl(152 38% 15% / 0.45);
+  --sidebar-ring:          hsl(158 75% 50%);
+  --theme-scroll-hover:    hsl(158 75% 40%);
+}
+
+/* ── Shared theme-driven styles ── */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-scroll-hover, hsl(192 96% 42%));
+}
+.text-glow {
+  text-shadow: 0 0 30px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+.glow-primary {
+  box-shadow: 0 0 22px color-mix(in srgb, var(--primary) 28%, transparent);
+  transition: box-shadow 0.22s ease;
+}
+.glow-primary:hover {
+  box-shadow: 0 0 40px color-mix(in srgb, var(--primary) 50%, transparent);
+}
+.watch-progress-fill {
+  background: linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary) 70%, hsl(265 80% 65%)));
+}
+
+/* ── Mobile bottom nav safe spacing ── */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 4.5rem; /* 72px — nav height */
+  }
+}
+
+/* Hide scrollbar globally for Netflix rows */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Mobile nav safe area (notch support) */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Card hover glow (theme-aware) ── */
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, ring 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 2px color-mix(in srgb, var(--primary) 50%, transparent);
+}
+
+/* ── Section fade-in on scroll (IntersectionObserver via CSS) ── */
+@supports (animation-timeline: scroll()) {
+  .row-section {
+    animation: fadeUp 0.5s ease both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 25%;
+  }
+}
+
+
+/* ── Smooth page transitions ── */
+@view-transition {
+  navigation: auto;
+}
