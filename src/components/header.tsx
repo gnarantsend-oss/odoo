@@ -11,6 +11,14 @@ export default function Header() {
             <MZtvLogo className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block">Narhan TV</span>
           </Link>
+          <nav className="hidden md:flex items-center gap-1 bg-secondary/50 p-1 rounded-full">
+            <Link href="/" className="px-4 py-1.5 rounded-full text-sm font-medium text-yellow-400/80 hover:text-yellow-400 transition-colors">
+              Монгол
+            </Link>
+            <Link href="/foreign" className="px-4 py-1.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Гадаад
+            </Link>
+          </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
           <ThemeSwitcher />
