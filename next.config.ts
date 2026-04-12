@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
   async headers() {
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://image.tmdb.org https://s4.anilist.co https://m.media-amazon.com https://vz-e6562a2b-a7e.b-cdn.net https://placehold.co https://images.unsplash.com https://picsum.photos https://tbinoukdsxxmbtzkghvj.supabase.co https://lovingmoviesfr.com",
