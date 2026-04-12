@@ -1,3 +1,4 @@
+"use server";
 import { cacheLife, cacheTag } from 'next/cache';
 import { type Movie, type TMDBResponse, type TVShow } from './types';
 

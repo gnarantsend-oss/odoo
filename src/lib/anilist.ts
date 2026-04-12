@@ -1,3 +1,4 @@
+"use server";
 import { cacheLife, cacheTag } from 'next/cache';
 import { type AniListResponse, type AniListMediaResponse, type Media } from './types';
 
