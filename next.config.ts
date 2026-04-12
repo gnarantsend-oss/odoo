@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
       { protocol: 'https', hostname: 'm.media-amazon.com', pathname: '/**' },
       { protocol: 'https', hostname: 'vz-e6562a2b-a7e.b-cdn.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'tbinoukdsxxmbtzkghvj.supabase.co', pathname: '/**' },
+      { protocol: 'https', hostname: 'lovingmoviesfr.com', pathname: '/**' },
     ],
   },
 
@@ -39,7 +41,7 @@ const nextConfig: NextConfig = {
       "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://image.tmdb.org https://s4.anilist.co https://m.media-amazon.com https://vz-e6562a2b-a7e.b-cdn.net https://placehold.co https://images.unsplash.com https://picsum.photos",
+      "img-src 'self' data: blob: https://image.tmdb.org https://s4.anilist.co https://m.media-amazon.com https://vz-e6562a2b-a7e.b-cdn.net https://placehold.co https://images.unsplash.com https://picsum.photos https://tbinoukdsxxmbtzkghvj.supabase.co https://lovingmoviesfr.com",
       "frame-src https://vidsrc.icu https://iframe.mediadelivery.net",
       "connect-src 'self' https://graphql.anilist.co https://api.themoviedb.org",
       "media-src 'self' blob: https://vidsrc.icu",
