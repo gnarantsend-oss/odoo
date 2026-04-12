@@ -4,7 +4,11 @@ import type { Media, Movie, TVShow } from '@/lib/types';
 import Header from '@/components/header';
 import dynamic from 'next/dynamic';
 
-const AniListSection    = dynamic(() => import('@/components/anilist-section'));
+// AniMovie загвар: бүх data-г server-side fetch хийнэ
+// Client component-с API дуудахгүй — Cloudflare Workers-д найдвартай
+
+const HeroCarousel      = dynamic(() => import('@/components/hero-carousel'));
+const MediaCarousel     = dynamic(() => import('@/components/media-carousel'));
 const MediaGrid         = dynamic(() => import('@/components/media-grid'));
 const MovieCarousel     = dynamic(() => import('@/components/movie-carousel'));
 const TvCarousel        = dynamic(() => import('@/components/tv-carousel'));
@@ -15,6 +19,8 @@ const TvHeroCarousel    = dynamic(() => import('@/components/tv-hero-carousel'))
 const AdvertiseBanner   = dynamic(() => import('@/components/advertise-banner'));
 const MongolTab         = dynamic(() => import('@/components/mongol-tab'));
 
+export const revalidate = 3600;
+
 export default async function Home({
   searchParams,
 }: {
@@ -24,21 +30,26 @@ export default async function Home({
   const query = sp?.query || '';
   const tab = sp?.tab || 'anime';
 
+  let trendingAnime: Media[]  = [];
+  let popularAnime: Media[]   = [];
+  let trendingManga: Media[]  = [];
+  let popularManga: Media[]   = [];
   let trendingMovies: Movie[] = [];
-  let popularMovies: Movie[] = [];
+  let popularMovies: Movie[]  = [];
   let topRatedMovies: Movie[] = [];
   let nowPlayingMovies: Movie[] = [];
   let upcomingMovies: Movie[] = [];
-  let trendingTv: TVShow[] = [];
-  let popularTv: TVShow[] = [];
+  let trendingTv: TVShow[]    = [];
+  let popularTv: TVShow[]     = [];
 
-  let animeSearchResults: Media[] = [];
-  let mangaSearchResults: Media[] = [];
-  let movieSearchResults: Movie[] = [];
-  let tvSearchResults: TVShow[] = [];
+  let animeSearchResults: Media[]  = [];
+  let mangaSearchResults: Media[]  = [];
+  let movieSearchResults: Movie[]  = [];
+  let tvSearchResults: TVShow[]    = [];
 
   try {
     if (query) {
+      // Хайлт — зөвхөн идэвхтэй tab-н мэдээлэл татна
       if (tab === 'anime') {
         animeSearchResults = await fetchFromAniList({ search: query, type: 'ANIME', sort: ['SEARCH_MATCH'], perPage: 40 });
       } else if (tab === 'manga') {
@@ -49,7 +60,12 @@ export default async function Home({
         tvSearchResults = await fetchFromTMDB('/search/tv', { query });
       }
     } else {
-      const tmdbRes = await Promise.allSettled([
+      // AniMovie загвар: бүгдийг нэгэн зэрэг Promise.allSettled-аар татна
+      const results = await Promise.allSettled([
+        fetchFromAniList({ type: 'ANIME', sort: ['TRENDING_DESC', 'POPULARITY_DESC'], perPage: 10 }),
+        fetchFromAniList({ type: 'ANIME', sort: ['POPULARITY_DESC'], perPage: 20 }),
+        fetchFromAniList({ type: 'MANGA', sort: ['TRENDING_DESC', 'POPULARITY_DESC'], perPage: 10 }),
+        fetchFromAniList({ type: 'MANGA', sort: ['POPULARITY_DESC'], perPage: 20 }),
         fetchFromTMDB('/trending/movie/week'),
         fetchFromTMDB('/movie/popular'),
         fetchFromTMDB('/movie/top_rated'),
@@ -58,8 +74,15 @@ export default async function Home({
         fetchFromTMDB('/trending/tv/week'),
         fetchFromTMDB('/tv/popular'),
       ]);
-      const getVal = (r: PromiseSettledResult<any>) => r.status === 'fulfilled' ? r.value : [];
-      [trendingMovies, popularMovies, topRatedMovies, nowPlayingMovies, upcomingMovies, trendingTv, popularTv] = tmdbRes.map(getVal) as [Movie[], Movie[], Movie[], Movie[], Movie[], TVShow[], TVShow[]];
+
+      const get = (r: PromiseSettledResult<any>) => r.status === 'fulfilled' ? r.value : [];
+      [trendingAnime, popularAnime, trendingManga, popularManga,
+       trendingMovies, popularMovies, topRatedMovies, nowPlayingMovies, upcomingMovies,
+       trendingTv, popularTv] = results.map(get) as [
+        Media[], Media[], Media[], Media[],
+        Movie[], Movie[], Movie[], Movie[], Movie[],
+        TVShow[], TVShow[]
+      ];
     }
   } catch (error) {
     console.error('Failed to fetch data:', error);
@@ -70,7 +93,6 @@ export default async function Home({
       <Header />
       <main className="flex-1">
         {query ? (
-          /* ── Search results ── */
           <div className="px-4 md:px-12 py-8 space-y-12">
             {animeSearchResults.length > 0 && <MediaGrid title="Anime Results" items={animeSearchResults} />}
             {mangaSearchResults.length > 0 && <MediaGrid title="Manga Results" items={mangaSearchResults} />}
@@ -86,35 +108,44 @@ export default async function Home({
           </div>
         ) : (
           <>
-            {/* ── Hero ── */}
+            {/* Hero */}
+            {tab === 'anime'  && trendingAnime.length > 0  && <HeroCarousel items={trendingAnime.slice(0, 5)} />}
+            {tab === 'manga'  && trendingManga.length > 0  && <HeroCarousel items={trendingManga.slice(0, 5)} />}
             {tab === 'movies' && trendingMovies.length > 0 && <MovieHeroCarousel items={trendingMovies.slice(0, 5)} />}
             {tab === 'tv'     && trendingTv.length > 0     && <TvHeroCarousel items={trendingTv.slice(0, 5)} />}
             {tab === 'mongol' && <MongolTab />}
 
-            {/* ── Anime / Manga — client-side fetch ── */}
-            {tab === 'anime' && !query && <AniListSection type="ANIME" />}
-            {tab === 'manga' && !query && <AniListSection type="MANGA" />}
+            {/* Anime / Manga carousels — server props-оор дамжина */}
+            {tab === 'anime' && (
+              <div className="py-4 space-y-2">
+                {trendingAnime.length > 0 && <MediaCarousel title="Trending Anime" items={trendingAnime} />}
+                {popularAnime.length > 0  && <MediaCarousel title="Popular Anime"  items={popularAnime}  />}
+              </div>
+            )}
+            {tab === 'manga' && (
+              <div className="py-4 space-y-2">
+                {trendingManga.length > 0 && <MediaCarousel title="Trending Manga" items={trendingManga} />}
+                {popularManga.length > 0  && <MediaCarousel title="Popular Manga"  items={popularManga}  />}
+              </div>
+            )}
 
             {tab !== 'mongol' && tab !== 'anime' && tab !== 'manga' && <AdvertiseBanner />}
 
-            {/* ── Netflix rows ── */}
-            {tab !== 'mongol' && tab !== 'anime' && tab !== 'manga' && <div className="py-4 space-y-2">
-              {tab === 'movies' && (
-                <>
-                  <MovieCarousel title="Trending Movies"  items={trendingMovies}    />
-                  <MovieCarousel title="Popular Movies"   items={popularMovies}     />
-                  <MovieCarousel title="Now Playing"      items={nowPlayingMovies}  />
-                  <MovieCarousel title="Top Rated"        items={topRatedMovies}    />
-                  <MovieCarousel title="Coming Soon"      items={upcomingMovies}    />
-                </>
-              )}
-              {tab === 'tv' && (
-                <>
-                  <TvCarousel title="Trending TV Shows" items={trendingTv} />
-                  <TvCarousel title="Popular TV Shows"  items={popularTv}  />
-                </>
-              )}
-            </div>}
+            {tab === 'movies' && (
+              <div className="py-4 space-y-2">
+                <MovieCarousel title="Trending Movies" items={trendingMovies}    />
+                <MovieCarousel title="Popular Movies"  items={popularMovies}     />
+                <MovieCarousel title="Now Playing"     items={nowPlayingMovies}  />
+                <MovieCarousel title="Top Rated"       items={topRatedMovies}    />
+                <MovieCarousel title="Coming Soon"     items={upcomingMovies}    />
+              </div>
+            )}
+            {tab === 'tv' && (
+              <div className="py-4 space-y-2">
+                <TvCarousel title="Trending TV Shows" items={trendingTv} />
+                <TvCarousel title="Popular TV Shows"  items={popularTv}  />
+              </div>
+            )}
           </>
         )}
       </main>
