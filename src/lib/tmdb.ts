@@ -1,4 +1,4 @@
-
+import { cacheLife, cacheTag } from 'next/cache';
 import { type Movie, type TMDBResponse, type TVShow } from './types';
 
 const TMDB_API_URL = 'https://api.themoviedb.org/3';
@@ -14,26 +14,43 @@ export function getTMDBImageUrl(path: string | null, size: 'w500' | 'original' =
   return `${TMDB_IMAGE_BASE_URL}${size}${path}`;
 }
 
-async function tmdbFetch(endpoint: string, params: Record<string, string> = {}) {
-    if (!TMDB_API_KEY) {
-        console.error('TMDB API key is not configured.');
-        return [];
-    }
-    const url = new URL(`${TMDB_API_URL}${endpoint}`);
-    url.searchParams.append('api_key', TMDB_API_KEY);
-    Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
+// Cloudflare Workers fetch options — typed properly
+type CfFetchInit = RequestInit & {
+  cf?: {
+    cacheTtl?: number;
+    cacheEverything?: boolean;
+  };
+};
 
-    try {
-        const response = await fetch(url.toString(), { cf: { cacheTtl: 3600, cacheEverything: true } } as any);
-        if (!response.ok) {
-        console.error(`TMDB API Error: ${response.statusText}`);
-        return { results: [] };
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Failed to fetch from TMDB:', error);
-        return { results: [] };
+async function tmdbFetch(endpoint: string, params: Record<string, string> = {}) {
+  'use cache';
+  cacheLife('hours');
+  cacheTag(`tmdb-${endpoint.replace(/\//g, '-').slice(1)}`);
+
+  if (!TMDB_API_KEY) {
+    console.error('TMDB API key is not configured.');
+    return [];
+  }
+
+  const url = new URL(`${TMDB_API_URL}${endpoint}`);
+  url.searchParams.append('api_key', TMDB_API_KEY);
+  Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
+
+  const init: CfFetchInit = {
+    cf: { cacheTtl: 3600, cacheEverything: true },
+  };
+
+  try {
+    const response = await fetch(url.toString(), init as RequestInit);
+    if (!response.ok) {
+      console.error(`TMDB API Error: ${response.statusText}`);
+      return { results: [] };
     }
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch from TMDB:', error);
+    return { results: [] };
+  }
 }
 
 export async function fetchFromTMDB(endpoint: string, params: Record<string, string> = {}): Promise<any[]> {
@@ -42,45 +59,72 @@ export async function fetchFromTMDB(endpoint: string, params: Record<string, str
 }
 
 export async function fetchMovieById(id: number): Promise<Movie | null> {
-    if (!TMDB_API_KEY) {
-        console.error('TMDB API key is not configured for fetching movie by ID.');
-        return null;
-    }
-    const url = new URL(`${TMDB_API_URL}/movie/${id}`);
-    url.searchParams.append('api_key', TMDB_API_KEY);
+  'use cache';
+  cacheLife('hours');
+  cacheTag(`tmdb-movie-${id}`);
 
-    try {
-        const response = await fetch(url.toString(), { cf: { cacheTtl: 3600, cacheEverything: true } } as any);
-        if (!response.ok) {
-            console.error(`TMDB API Error fetching movie by id: ${response.statusText}`);
-            return null;
-        }
-        const movie: Movie = await response.json();
-        return movie;
-    } catch (error) {
-        console.error('Failed to fetch movie by id from TMDB:', error);
-        return null;
+  if (!TMDB_API_KEY) {
+    console.error('TMDB API key is not configured for fetching movie by ID.');
+    return null;
+  }
+
+  const url = new URL(`${TMDB_API_URL}/movie/${id}`);
+  url.searchParams.append('api_key', TMDB_API_KEY);
+
+  const init: CfFetchInit = {
+    cf: { cacheTtl: 3600, cacheEverything: true },
+  };
+
+  try {
+    const response = await fetch(url.toString(), init as RequestInit);
+    if (!response.ok) {
+      console.error(`TMDB API Error fetching movie by id: ${response.statusText}`);
+      return null;
     }
+    const movie: Movie = await response.json();
+    return movie;
+  } catch (error) {
+    console.error('Failed to fetch movie by id from TMDB:', error);
+    return null;
+  }
 }
 
 export async function fetchTVShowById(id: number): Promise<TVShow | null> {
-    if (!TMDB_API_KEY) {
-        console.error('TMDB API key is not configured for fetching TV show by ID.');
-        return null;
-    }
-    const url = new URL(`${TMDB_API_URL}/tv/${id}`);
-    url.searchParams.append('api_key', TMDB_API_KEY);
+  'use cache';
+  cacheLife('hours');
+  cacheTag(`tmdb-tv-${id}`);
 
-    try {
-        const response = await fetch(url.toString(), { cf: { cacheTtl: 3600, cacheEverything: true } } as any);
-        if (!response.ok) {
-            console.error(`TMDB API Error fetching TV show by id: ${response.statusText}`);
-            return null;
-        }
-        const show: TVShow = await response.json();
-        return show;
-    } catch (error) {
-        console.error('Failed to fetch TV show by id from TMDB:', error);
-        return null;
+  if (!TMDB_API_KEY) {
+    console.error('TMDB API key is not configured for fetching TV show by ID.');
+    return null;
+  }
+
+  const url = new URL(`${TMDB_API_URL}/tv/${id}`);
+  url.searchParams.append('api_key', TMDB_API_KEY);
+
+  const init: CfFetchInit = {
+    cf: { cacheTtl: 3600, cacheEverything: true },
+  };
+
+  try {
+    const response = await fetch(url.toString(), init as RequestInit);
+    if (!response.ok) {
+      console.error(`TMDB API Error fetching TV show by id: ${response.statusText}`);
+      return null;
     }
+    const show: TVShow = await response.json();
+    return show;
+  } catch (error) {
+    console.error('Failed to fetch TV show by id from TMDB:', error);
+    return null;
+  }
+}
+
+// Client-side search helper — API key-г ашигладаggүй, /api/search route-г дуудна
+// search-bar.tsx болон client component-д зориулсан
+export async function searchTMDB(query: string, type: 'movie' | 'tv', limit = 5) {
+  const params = new URLSearchParams({ q: query, type, limit: String(limit) });
+  const res = await fetch(`/api/search?${params}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<(Movie | TVShow)[]>;
 }

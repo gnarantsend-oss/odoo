@@ -4,6 +4,14 @@ import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
+  // React Compiler 1.0 (stable, Oct 2025) — automatic memoization
+  // useMemo/useCallback гараар бичих шаардлагагүй болно
+  reactCompiler: true,
+
+  // Cache Components (Next.js 16) — 'use cache' directive идэвхжүүлнэ,
+  // React Activity-г ашиглан route хооронд шилжихэд state хадгалагдана
+  cacheComponents: true,
+
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },

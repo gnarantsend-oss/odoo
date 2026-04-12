@@ -1,9 +1,11 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+
+// JSON-г server-side import — client-д 52KB fetch хийхгүй болно
+import moviesData from '@/lib/mongol_movies.json';
 
 type Episode = { ep: number; title: string; iframe: string };
 type MongolMovie = {
@@ -16,63 +18,71 @@ type MongolMovie = {
   episodes?: Episode[];
 };
 
-export default function MongolWatchPage() {
-  const params = useParams();
-  const router = useRouter();
-  const [movie, setMovie] = useState<MongolMovie | null | undefined>(undefined);
-  const [epIndex, setEpIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+const movies: MongolMovie[] = moviesData as MongolMovie[];
 
-  useEffect(() => {
-    fetch('/mongol_movies.json')
-      .then(r => r.json())
-      .then((movies: MongolMovie[]) => {
-        const found = movies.find(m => m.id === Number(params.id));
-        setMovie(found ?? null);
-      });
-  }, [params.id]);
+type Props = { params: Promise<{ id: string }> };
 
-  // Ачаалж байна
-  if (movie === undefined) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const movie = movies.find((m) => m.id === Number(id));
+  if (!movie) return { title: 'Кино олдсонгүй' };
+  return {
+    title: `${movie.name} — Narhan TV`,
+    description: `${movie.name} — Монгол кино үзнэ үү.`,
+  };
+}
 
-  if (!movie) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background text-foreground">
-        <div className="text-center space-y-4">
-          <p className="text-xl">Кино олдсонгүй</p>
-          <Button onClick={() => router.push('/mongol')}>Буцах</Button>
-        </div>
-      </div>
-    );
-  }
+export default async function MongolWatchPage({ params }: Props) {
+  const { id } = await params;
+  const movie = movies.find((m) => m.id === Number(id));
 
-  const isSerial = !!movie.episodes;
-  const episodes = movie.episodes || [];
-  const currentEp = episodes[epIndex];
-  const iframeSrc = isSerial ? currentEp?.iframe : movie.iframe;
+  if (!movie) notFound();
+
+  const isSerial = !!movie.episodes && movie.episodes.length > 0;
 
   return (
     <div className="flex h-screen flex-col bg-black text-white">
+      {/* Header */}
       <header className="flex items-center gap-4 px-4 py-3 bg-background/90 backdrop-blur border-b border-border/40">
-        <Button variant="outline" size="icon" onClick={() => router.push('/mongol')}>
-          <ArrowLeft />
-        </Button>
+        <Link href="/mongol">
+          <Button variant="outline" size="icon" aria-label="Буцах">
+            <ArrowLeft />
+          </Button>
+        </Link>
         <div className="flex flex-col overflow-hidden">
           <h1 className="truncate font-semibold text-foreground">{movie.name}</h1>
           {isSerial && (
             <span className="text-sm text-muted-foreground">
-              {epIndex + 1}-р анги / {episodes.length}
+              {movie.episodes!.length} анги
             </span>
           )}
         </div>
       </header>
 
+      {/* Player — client island */}
+      <MongolPlayer movie={movie} />
+    </div>
+  );
+}
+
+// Client island — зөвхөн iframe болон episode navigation-д зориулсан
+// Ингэснээр бүх data server-side-аас ирж, client bundle жижигхэн байна
+'use client';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+
+function MongolPlayer({ movie }: { movie: MongolMovie }) {
+  const isSerial = !!movie.episodes && movie.episodes.length > 0;
+  const episodes = movie.episodes || [];
+
+  const [epIndex, setEpIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const iframeSrc = isSerial ? episodes[epIndex]?.iframe : movie.iframe;
+
+  return (
+    <>
+      {/* Episode selector */}
       {isSerial && (
         <div className="flex gap-2 overflow-x-auto px-4 py-3 bg-background/80 border-b border-border/40">
           {episodes.map((ep, i) => (
@@ -91,10 +101,11 @@ export default function MongolWatchPage() {
         </div>
       )}
 
-      <main className="flex flex-1 items-center justify-center overflow-hidden bg-black">
+      {/* Iframe */}
+      <main className="relative flex flex-1 items-center justify-center overflow-hidden bg-black">
         {loading && (
           <div className="absolute flex items-center justify-center w-full h-full">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         )}
         {iframeSrc ? (
@@ -111,6 +122,7 @@ export default function MongolWatchPage() {
         )}
       </main>
 
+      {/* Episode navigation */}
       {isSerial && (
         <footer className="flex items-center justify-between p-4 bg-background/90 border-t border-border/40">
           <Button
@@ -120,6 +132,9 @@ export default function MongolWatchPage() {
           >
             <ChevronLeft className="mr-2" /> Өмнөх
           </Button>
+          <span className="text-sm text-muted-foreground">
+            {epIndex + 1} / {episodes.length}
+          </span>
           <Button
             variant="secondary"
             onClick={() => { setEpIndex(i => i + 1); setLoading(true); }}
@@ -129,6 +144,6 @@ export default function MongolWatchPage() {
           </Button>
         </footer>
       )}
-    </div>
+    </>
   );
 }

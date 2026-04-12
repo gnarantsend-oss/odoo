@@ -1,4 +1,4 @@
-
+import { cacheLife, cacheTag } from 'next/cache';
 import { type AniListResponse, type AniListMediaResponse, type Media } from './types';
 
 const ANILIST_API_URL = 'https://graphql.anilist.co';
@@ -74,10 +74,7 @@ async function anilistFetch(query: string, variables: object) {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
+    body: JSON.stringify({ query, variables }),
   };
 
   try {
@@ -85,37 +82,50 @@ async function anilistFetch(query: string, variables: object) {
 
     if (!response.ok) {
       console.error(`AniList API responded with status: ${response.status}`);
-      return { data: null }; // Return a consistent shape on error
+      return { data: null };
     }
 
     return response.json();
   } catch (error) {
     console.error('Failed to fetch from AniList:', error);
-    return { data: null }; // Return a consistent shape on error
+    return { data: null };
   }
 }
 
 export async function fetchFromAniList(options: FetchOptions = {}): Promise<Media[]> {
-  const { search, page = 1, perPage = 20, sort, type, genre_in } = options;
-  const variables = { search, page, perPage, sort, type, genre_in };
+  'use cache';
+  cacheLife('hours');
 
+  const { search, page = 1, perPage = 20, sort, type, genre_in } = options;
+
+  // Cache tag: search query-тэй болон үгүй тохиолдлыг ялгана
+  if (search) {
+    cacheTag(`anilist-search-${type ?? 'all'}-${search}`);
+  } else {
+    cacheTag(`anilist-browse-${type ?? 'all'}-${sort?.join('-') ?? 'default'}`);
+  }
+
+  const variables = { search, page, perPage, sort, type, genre_in };
   const json: AniListResponse = await anilistFetch(MEDIA_QUERY, variables);
-  
+
   if (json.data && json.data.Page && json.data.Page.media) {
-    // Filter out items with null description as they are often not useful
     return json.data.Page.media.filter(item => item && item.description);
   }
-  
+
   return [];
 }
 
 export async function fetchMediaById(id: number): Promise<Media | null> {
-    const variables = { id };
-    const json: AniListMediaResponse = await anilistFetch(SINGLE_MEDIA_QUERY, variables);
+  'use cache';
+  cacheLife('hours');
+  cacheTag(`anilist-media-${id}`);
 
-    if (json.data && json.data.Media) {
-        return json.data.Media;
-    }
+  const variables = { id };
+  const json: AniListMediaResponse = await anilistFetch(SINGLE_MEDIA_QUERY, variables);
 
-    return null;
+  if (json.data && json.data.Media) {
+    return json.data.Media;
+  }
+
+  return null;
 }
