@@ -1,0 +1,33 @@
+# ── Next.js static assets — 1 жил, immutable ──
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# ── JSON өгөгдөл — 1 цаг cache, stale-while-revalidate ──
+/mongol_movies.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Vary: Accept-Encoding
+
+/foreign_movies.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Vary: Accept-Encoding
+
+# ── Зураг, SVG — 1 жил ──
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── Service Worker — cache хийхгүй ──
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# ── Бүх хуудас — Cloudflare edge-д 60 секунд cache ──
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
