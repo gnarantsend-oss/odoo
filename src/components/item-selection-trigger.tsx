@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button, type ButtonProps } from '@/components/ui/button';
@@ -29,6 +30,7 @@ export function ItemSelectionTrigger({
         <Button {...buttonProps}>{buttonText}</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto">
+        <DialogDescription className="sr-only">Select an episode or chapter to watch</DialogDescription>
         <ItemSelectionModal media={media} setOpen={setOpen} />
       </DialogContent>
     </Dialog>
