@@ -7,6 +7,13 @@
     "nodejs_compat",
     "global_fetch_strictly_public"
   ],
+  "routes": [
+    {
+      "pattern": "narhantv.com",
+      "zone_name": "narhantv.com",
+      "custom_domain": true
+    }
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -14,7 +21,8 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "odoo"
+      "service": "odoo",
+      "environment": "production"
     }
   ],
   "r2_buckets": [
@@ -23,8 +31,24 @@
       "bucket_name": "narhan-cache"
     }
   ],
-  // Bunny Token Auth key — Cloudflare Dashboard > Workers & Pages > Settings > Variables дээр
-  // нууц утгаар (Secret) нэмнэ. Энд placeholder утга бичнэ:
+
+  // ─── BUNNY.NET TOKEN AUTH ТОХИРГОО ───────────────────────────────────────
+  //
+  // 1. BUNNY DASHBOARD дээр хийх (нэг удаа):
+  //    Stream → jan [634549] → Security → General
+  //      ✅ Block direct url file access     → Toggle ON (асаасан байна)
+  //      ✅ Embed view token authentication  → Toggle ON  ← ЭНЭ ХИЙГДЭЭГҮЙ
+  //    "Token authentication key" хэсгээс API key-г хуулна (👁 → 📋)
+  //
+  // 2. CLOUDFLARE дээр нэмэх:
+  //    Workers & Pages → odoo → Settings → Variables and Secrets → + Add
+  //      Type:  Secret
+  //      Name:  BUNNY_STREAM_TOKEN_KEY
+  //      Value: (Bunny-с хуулсан API key)
+  //    → Deploy дарна
+  //
+  // Доорх "vars"-д утга бичихгүй — Secret-ийг dashboard-аас л нэмнэ!
+  // ─────────────────────────────────────────────────────────────────────────
   "vars": {
     "BUNNY_STREAM_TOKEN_KEY": ""
   }
