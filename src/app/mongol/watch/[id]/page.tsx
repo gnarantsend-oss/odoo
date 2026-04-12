@@ -23,6 +23,13 @@ const movies: MongolMovie[] = moviesData as MongolMovie[];
 
 type Props = { params: Promise<{ id: string }> };
 
+// ── Бүх кино хуудсыг build үед pre-render хийнэ ─────────────────────────────
+// Cloudflare edge-д static shell-ийг cache хийж, 500k хэрэглэгчийг серверт
+// хүрэхгүйгээр үйлчилнэ. Token нь request үед динамикаар үүснэ.
+export async function generateStaticParams() {
+  return movies.map((m) => ({ id: String(m.id) }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const movie = movies.find((m) => m.id === Number(id));
@@ -30,6 +37,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${movie.name} — Narhan TV`,
     description: `${movie.name} — Монгол кино үзнэ үү.`,
+    openGraph: {
+      title: `${movie.name} — Narhan TV`,
+      description: `${movie.name} — Монгол кино үзнэ үү.`,
+      images: movie.poster ? [{ url: movie.poster }] : [],
+    },
   };
 }
 
@@ -39,9 +51,9 @@ export default async function MongolWatchPage({ params }: Props) {
 
   if (!movie) notFound();
 
-  // Server-side дээр Token-той signed URL үүсгэнэ (1 цаг хүчинтэй).
-  // BUNNY_STREAM_TOKEN_KEY env var тохируулаагүй бол оригинал URL хэвээр ажиллана.
-  const signedMovie = signMovieIframes(movie, 3600);
+  // Server-side дээр 6 цаг хүчинтэй Token-той signed URL үүсгэнэ.
+  // Cloudflare edge 30 мин cache хийх тул token 5.5 цаг хүчинтэй үлдэнэ.
+  const signedMovie = signMovieIframes(movie, 21600);
 
   const isSerial = !!movie.episodes && movie.episodes.length > 0;
 
