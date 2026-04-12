@@ -1,10 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchFromAniList } from '@/lib/anilist';
 import { type Media } from '@/lib/types';
 import MediaCarousel from './media-carousel';
 import HeroCarousel from './hero-carousel';
+
+async function fetchAniList(type: 'ANIME' | 'MANGA', sort: string, perPage = 20): Promise<Media[]> {
+  const params = new URLSearchParams({ type, sort, perPage: String(perPage) });
+  const res = await fetch(`/api/anilist?${params}`);
+  if (!res.ok) return [];
+  return res.json();
+}
 
 export default function AniListSection({ type }: { type: 'ANIME' | 'MANGA' }) {
   const [trending, setTrending] = useState<Media[]>([]);
@@ -13,8 +19,8 @@ export default function AniListSection({ type }: { type: 'ANIME' | 'MANGA' }) {
 
   useEffect(() => {
     Promise.allSettled([
-      fetchFromAniList({ type, sort: ['TRENDING_DESC', 'POPULARITY_DESC'], perPage: 20 }),
-      fetchFromAniList({ type, sort: ['POPULARITY_DESC'], perPage: 20 }),
+      fetchAniList(type, 'TRENDING_DESC', 20),
+      fetchAniList(type, 'POPULARITY_DESC', 20),
     ]).then(([t, p]) => {
       if (t.status === 'fulfilled') setTrending(t.value);
       if (p.status === 'fulfilled') setPopular(p.value);
