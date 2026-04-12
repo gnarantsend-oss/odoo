@@ -1,5 +1,3 @@
-"use server";
-import { cacheLife, cacheTag } from 'next/cache';
 import { type AniListResponse, type AniListMediaResponse, type Media } from './types';
 
 const ANILIST_API_URL = 'https://graphql.anilist.co';
@@ -80,12 +78,10 @@ async function anilistFetch(query: string, variables: object) {
 
   try {
     const response = await fetch(ANILIST_API_URL, options);
-
     if (!response.ok) {
       console.error(`AniList API responded with status: ${response.status}`);
       return { data: null };
     }
-
     return response.json();
   } catch (error) {
     console.error('Failed to fetch from AniList:', error);
@@ -94,37 +90,24 @@ async function anilistFetch(query: string, variables: object) {
 }
 
 export async function fetchFromAniList(options: FetchOptions = {}): Promise<Media[]> {
-  'use cache';
-  cacheLife('hours');
-
   const { search, page = 1, perPage = 20, sort, type, genre_in } = options;
-
-  // Cache tag: search query-тэй болон үгүй тохиолдлыг ялгана
-  if (search) {
-    cacheTag(`anilist-search-${type ?? 'all'}-${search}`);
-  } else {
-    cacheTag(`anilist-browse-${type ?? 'all'}-${sort?.join('-') ?? 'default'}`);
-  }
-
   const variables = { search, page, perPage, sort, type, genre_in };
+
   const json: AniListResponse = await anilistFetch(MEDIA_QUERY, variables);
 
-  if (json.data && json.data.Page && json.data.Page.media) {
-    return json.data.Page.media.filter(item => item && item.description);
+  if (json.data?.Page?.media) {
+    // description filter хасав — Manga-н ихэнх бичлэг description байхгүй байдаг
+    return json.data.Page.media.filter((item: Media) => item != null);
   }
 
   return [];
 }
 
 export async function fetchMediaById(id: number): Promise<Media | null> {
-  'use cache';
-  cacheLife('hours');
-  cacheTag(`anilist-media-${id}`);
-
   const variables = { id };
   const json: AniListMediaResponse = await anilistFetch(SINGLE_MEDIA_QUERY, variables);
 
-  if (json.data && json.data.Media) {
+  if (json.data?.Media) {
     return json.data.Media;
   }
 
