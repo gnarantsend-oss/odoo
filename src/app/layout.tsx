@@ -39,7 +39,7 @@ function Footer() {
                        mb-16 md:mb-0">
       <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row">
         <div className="flex flex-col items-center gap-2 text-center md:items-start md:text-left">
-          <p>&copy; {new Date().getFullYear()} Narhan TV. All Rights Reserved.</p>
+          <p>&copy; 2026 Narhan TV. All Rights Reserved.</p>
           <p className="max-w-md text-xs opacity-60">
             All media content is provided by third-party services. Narhan TV does not claim
             ownership of any content linked or embedded on this site.
