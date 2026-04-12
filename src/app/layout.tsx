@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 
+import { Suspense } from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import DisclaimerModal from '@/components/disclaimer-modal';
@@ -58,7 +59,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             {children}
           </div>
           <Footer />
-          <BottomNav />
+          <Suspense fallback={null}>
+            <BottomNav />
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>
