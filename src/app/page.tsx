@@ -19,7 +19,6 @@ const TvHeroCarousel    = dynamic(() => import('@/components/tv-hero-carousel'))
 const AdvertiseBanner   = dynamic(() => import('@/components/advertise-banner'));
 const MongolTab         = dynamic(() => import('@/components/mongol-tab'));
 
-export const revalidate = 3600;
 
 export default async function Home({
   searchParams,

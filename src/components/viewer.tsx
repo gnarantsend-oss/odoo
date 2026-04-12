@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useEffectEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -45,7 +45,6 @@ export default function Viewer({
   initialSeasonNumber = 1,
   type,
 }: ViewerProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
@@ -64,38 +63,33 @@ export default function Viewer({
   const isMovie = type === 'movie';
   const isTv    = type === 'tv';
 
+  const title = media.title.english || media.title.romaji;
+
   const totalItems = isAnime
     ? media.episodes
     : isTv
       ? (media.seasons?.find((s) => s.season_number === seasonNumber)?.episode_count)
       : media.chapters;
 
-  // useEffectEvent — title/media değerleri değiştiğinde effect'i yeniden çalıştırmaz,
-  // ama her zaman güncel değerleri okur (stale closure olmaz)
-  const updateHistory = useEffectEvent(() => {
-    const title = media.title.english || media.title.romaji;
+  useEffect(() => {
+    setIsLoading(true);
+    const newSrc = getIframeSrc(type, mediaId, itemNumber, seasonNumber, isDub);
+    setIframeSrc(newSrc);
+
     const slug  = slugify(title);
     let newUrl  = `/view/${type}/${media.id}-${slug}`;
 
     const params = new URLSearchParams();
-    if (isTv)    { params.set('season', seasonNumber.toString()); params.set('episode', itemNumber.toString()); }
-    else if (isAnime) params.set('item', itemNumber.toString());
-    else if (isManga) params.set('item', itemNumber.toString());
+    if (isTv)         { params.set('season', seasonNumber.toString()); params.set('episode', itemNumber.toString()); }
+    else if (isAnime) { params.set('item', itemNumber.toString()); }
+    else if (isManga) { params.set('item', itemNumber.toString()); }
     if (isAnime && isDub) params.set('dub', '1');
 
     const paramsString = params.toString();
     if (paramsString) newUrl += `?${paramsString}`;
     window.history.pushState(null, '', newUrl);
-  });
 
-  // itemNumber / seasonNumber / isDub өөрчлөгдөхөд iframe болон URL шинэчлэнэ.
-  // media.id, type нь prop учир өөрчлөгдөхгүй — гэхдээ lint-д зориулж оруулсан.
-  useEffect(() => {
-    setIsLoading(true);
-    const newSrc = getIframeSrc(type, mediaId, itemNumber, seasonNumber, isDub);
-    setIframeSrc(newSrc);
-    updateHistory(); // title/media нь useEffectEvent-ээр тогтвортой уншигдана
-  }, [itemNumber, seasonNumber, isDub, type, mediaId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [itemNumber, seasonNumber, isDub, media.id, mediaId, type, title, isAnime, isManga, isTv]);
 
   const handleNavigation = (newItemNumber: number) => {
     if (newItemNumber < 1) {
@@ -114,7 +108,6 @@ export default function Viewer({
     setItemNumber(1);
   };
 
-  const title    = media.title.english || media.title.romaji;
   const backLink = isMovie
     ? `/media/movie/${media.id}-${slugify(title)}`
     : isTv
