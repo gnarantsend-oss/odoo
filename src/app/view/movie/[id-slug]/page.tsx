@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { fetchMovieById, getTMDBImageUrl } from '@/lib/tmdb';
+import { fetchMovieById } from '@/lib/tmdb'
+import { getTMDBImageUrl } from '@/lib/tmdb-image';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { slugify } from '@/lib/utils';
 import Viewer from '@/components/viewer';

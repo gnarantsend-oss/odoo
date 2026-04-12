@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { type TVShow } from '@/lib/types';
 import { slugify } from '@/lib/utils';
-import { getTMDBImageUrl } from '@/lib/tmdb';
+import { getTMDBImageUrl } from '@/lib/tmdb-image';
 import { Play, Star } from 'lucide-react';
 
 interface TvCardProps {

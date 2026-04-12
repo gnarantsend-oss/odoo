@@ -7,7 +7,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { type Movie } from '@/lib/types';
 import { slugify } from '@/lib/utils';
 import { Play, Plus, Info } from 'lucide-react';
-import { getTMDBImageUrl } from '@/lib/tmdb';
+import { getTMDBImageUrl } from '@/lib/tmdb-image';
 
 export default function MovieHeroCarousel({ items }: { items: Movie[] }) {
   if (!items || items.length === 0) return null;

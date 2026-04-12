@@ -7,7 +7,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { type TVShow } from '@/lib/types';
 import { slugify } from '@/lib/utils';
 import { Play, Plus, Info } from 'lucide-react';
-import { getTMDBImageUrl } from '@/lib/tmdb';
+import { getTMDBImageUrl } from '@/lib/tmdb-image';
 
 export default function TvHeroCarousel({ items }: { items: TVShow[] }) {
   if (!items || items.length === 0) return null;

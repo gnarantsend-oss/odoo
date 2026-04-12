@@ -10,7 +10,7 @@ import { Search, X, Loader2, Tv, Clapperboard, Book, Film } from 'lucide-react';
 import { Popover, PopoverContent, PopoverAnchor } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
 import { fetchFromAniList } from '@/lib/anilist';
-import { getTMDBImageUrl } from '@/lib/tmdb';
+import { getTMDBImageUrl } from '@/lib/tmdb-image';
 import { type Media, type Movie, type TVShow } from '@/lib/types';
 import { slugify, cn } from '@/lib/utils';
 

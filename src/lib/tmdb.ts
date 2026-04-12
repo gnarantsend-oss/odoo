@@ -4,15 +4,9 @@ import { type Movie, type TMDBResponse, type TVShow } from './types';
 
 const TMDB_API_URL = 'https://api.themoviedb.org/3';
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
-const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 
 if (!TMDB_API_KEY) {
   console.error('Missing TMDB_API_KEY environment variable. Please add it to your .env.local file.');
-}
-
-export function getTMDBImageUrl(path: string | null, size: 'w500' | 'original' = 'w500') {
-  if (!path) return null;
-  return `${TMDB_IMAGE_BASE_URL}${size}${path}`;
 }
 
 // Cloudflare Workers fetch options — typed properly
