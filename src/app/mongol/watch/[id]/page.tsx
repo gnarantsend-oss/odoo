@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MongolPlayer } from './mongol-player';
+import { signMovieIframes } from '@/lib/bunny';
 
 import moviesData from '@/lib/mongol_movies.json';
 
@@ -38,6 +39,10 @@ export default async function MongolWatchPage({ params }: Props) {
 
   if (!movie) notFound();
 
+  // Server-side дээр Token-той signed URL үүсгэнэ (1 цаг хүчинтэй).
+  // BUNNY_STREAM_TOKEN_KEY env var тохируулаагүй бол оригинал URL хэвээр ажиллана.
+  const signedMovie = signMovieIframes(movie, 3600);
+
   const isSerial = !!movie.episodes && movie.episodes.length > 0;
 
   return (
@@ -58,7 +63,7 @@ export default async function MongolWatchPage({ params }: Props) {
         </div>
       </header>
 
-      <MongolPlayer movie={movie} />
+      <MongolPlayer movie={signedMovie} />
     </div>
   );
 }

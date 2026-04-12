@@ -22,5 +22,10 @@
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "narhan-cache"
     }
-  ]
+  ],
+  // Bunny Token Auth key — Cloudflare Dashboard > Workers & Pages > Settings > Variables дээр
+  // нууц утгаар (Secret) нэмнэ. Энд placeholder утга бичнэ:
+  "vars": {
+    "BUNNY_STREAM_TOKEN_KEY": ""
+  }
 }
