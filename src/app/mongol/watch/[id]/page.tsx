@@ -23,12 +23,10 @@ const movies: MongolMovie[] = moviesData as MongolMovie[];
 
 type Props = { params: Promise<{ id: string }> };
 
-// ── Бүх кино хуудсыг build үед pre-render хийнэ ─────────────────────────────
-// Cloudflare edge-д static shell-ийг cache хийж, 500k хэрэглэгчийг серверт
-// хүрэхгүйгээр үйлчилнэ. Token нь request үед динамикаар үүснэ.
-export async function generateStaticParams() {
-  return movies.map((m) => ({ id: String(m.id) }));
-}
+// ── Dynamic rendering — request бүрд шинэ token үүсгэнэ ─────────────────────
+// Cloudflare edge 30 мин cache хийх тул server дээр их ачаалал үүсэхгүй.
+// Token 6 цаг хүчинтэй, edge cache 30 мин → аюулгүй зай.
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
