@@ -23,11 +23,6 @@ const movies: MongolMovie[] = moviesData as MongolMovie[];
 
 type Props = { params: Promise<{ id: string }> };
 
-// ── Dynamic rendering — request бүрд шинэ token үүсгэнэ ─────────────────────
-// Cloudflare edge 30 мин cache хийх тул server дээр их ачаалал үүсэхгүй.
-// Token 6 цаг хүчинтэй, edge cache 30 мин → аюулгүй зай.
-export const dynamic = 'force-dynamic';
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const movie = movies.find((m) => m.id === Number(id));
