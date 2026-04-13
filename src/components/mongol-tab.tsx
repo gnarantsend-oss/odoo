@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Play, ChevronLeft, ChevronRight, Plus, Check } from 'lucide-react';
 import moviesJson from '@/lib/mongol_movies.json';
 import { getWatchlist, toggleWatchlist, getCW } from '@/lib/watchlist';
+import BANNERS from '@/lib/banners';
 
 type MongolMovie = {
   id: number; name: string; category: string; poster: string;
@@ -18,6 +19,8 @@ const CATEGORIES = [
   { key: 'trailer', label: '🎞 Трейлер' },
 ];
 const CAT_LABEL: Record<string, string> = { drama: 'Драм', horror: 'Аймшиг', comedy: 'Инээдэм', trailer: 'Трейлер' };
+
+// ══════════════════════════════════════════════════════
 
 // ── Poster-н хэмжээний загвар (8-ийн циклээр давтагдана)
 // Эх зураг нь 16:9 thumbnail тул width-ийг л өөрчилнө
@@ -330,8 +333,34 @@ export default function MongolTab() {
       <Hero movies={movies} />
       <div style={{ paddingTop: '28px', paddingBottom: '60px' }}>
         <ContinueRow movies={movies} />
-        {CATEGORIES.map(cat => (
-          <Row key={cat.key} cat={cat} movies={movies.filter(m => m.category === cat.key)} />
+        {CATEGORIES.map((cat, i) => (
+          <div key={cat.key}>
+            {BANNERS[i] && (
+              <a
+                href={BANNERS[i].href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'block',
+                  margin: '0 0 28px',
+                  overflow: 'hidden',
+                  height: '250px',
+                  border: '0',
+                  cursor: 'pointer',
+                  transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+              >
+                <img
+                  src={BANNERS[i].img}
+                  alt={BANNERS[i].alt ?? 'banner'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              </a>
+            )}
+            <Row cat={cat} movies={movies.filter(m => m.category === cat.key)} />
+          </div>
         ))}
       </div>
     </>
