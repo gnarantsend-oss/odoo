@@ -23,6 +23,16 @@ const movies: MongolMovie[] = moviesData as MongolMovie[];
 
 type Props = { params: Promise<{ id: string }> };
 
+// ── ISR: 30 минут тутам шинэчлэгдэнэ ────────────────────────────────────────
+// Token 6 цаг хүчинтэй, ISR 30 мин → аюулгүй зай.
+// Regional cache edge-д хадгалагдана, R2 load бага байна.
+// Deploy хийхэд cache устгагддаггүй — ISR автоматаар шинэчилнэ.
+export const revalidate = 1800; // 30 минут
+
+export async function generateStaticParams() {
+  return movies.map((m) => ({ id: String(m.id) }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const movie = movies.find((m) => m.id === Number(id));
@@ -45,7 +55,7 @@ export default async function MongolWatchPage({ params }: Props) {
   if (!movie) notFound();
 
   // Server-side дээр 6 цаг хүчинтэй Token-той signed URL үүсгэнэ.
-  // Cloudflare edge 30 мин cache хийх тул token 5.5 цаг хүчинтэй үлдэнэ.
+  // ISR 30 мин тутам шинэ token авна → token 5.5 цаг хүчинтэй үлдэнэ.
   const signedMovie = signMovieIframes(movie, 21600);
 
   const isSerial = !!movie.episodes && movie.episodes.length > 0;

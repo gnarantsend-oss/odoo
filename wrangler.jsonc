@@ -32,12 +32,30 @@
     }
   ],
 
+  // ─── ISR Revalidation Queue (Durable Objects) ────────────────────────────
+  // Ижил хуудасны revalidation давхардахгүй болно.
+  // Нэг хүсэлт ирэхэд зөвхөн нэг л background refresh хийнэ.
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_CACHE_DO_QUEUE",
+        "class_name": "DOQueueHandler"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOQueueHandler"]
+    }
+  ],
+
   // ─── BUNNY.NET TOKEN AUTH ТОХИРГОО ───────────────────────────────────────
   //
   // 1. BUNNY DASHBOARD дээр хийх (нэг удаа):
   //    Stream → jan [634549] → Security → General
-  //      ✅ Block direct url file access     → Toggle ON (асаасан байна)
-  //      ✅ Embed view token authentication  → Toggle ON  ← ЭНЭ ХИЙГДЭЭГҮЙ
+  //      ✅ Block direct url file access     → Toggle ON
+  //      ✅ Embed view token authentication  → Toggle ON
   //    "Token authentication key" хэсгээс API key-г хуулна (👁 → 📋)
   //
   // 2. CLOUDFLARE дээр нэмэх:
@@ -45,8 +63,10 @@
   //      Type:  Secret
   //      Name:  BUNNY_STREAM_TOKEN_KEY
   //      Value: (Bunny-с хуулсан API key)
-  //    → Deploy дарна
   //
-  // Доорх "vars"-д утга бичихгүй — Secret-ийг dashboard-аас л нэмнэ!
+  // 3. On-demand revalidation нэмэлт secret:
+  //    Name:  REVALIDATE_SECRET
+  //    Value: (дурын урт random string, жишээ: openssl rand -hex 32)
+  //
   // ─────────────────────────────────────────────────────────────────────────
 }
