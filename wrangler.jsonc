@@ -1,0 +1,81 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "odoo",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-04-14",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "routes": [
+    {
+      "pattern": "narhantv.com",
+      "zone_name": "narhantv.com",
+      "custom_domain": true
+    }
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "odoo",
+      "environment": "production"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "narhan-cache"
+    }
+  ],
+
+  // ─── ISR Revalidation Queue (Durable Objects) ────────────────────────────
+  // Ижил хуудасны revalidation давхардахгүй болно.
+  // Нэг хүсэлт ирэхэд зөвхөн нэг л background refresh хийнэ.
+  //
+  // ⚠️  BUILD WARNING тайлбар:
+  //   "no such Durable Object class is exported from the worker"
+  //   → Энэ нь ХЭВИЙН САНУУЛГА. DOQueueHandler-г OpenNext нь
+  //     .open-next/worker.js bundle дотор автоматаар export хийдэг.
+  //     Build үед wrangler тэр bundle-г хараахан уншаагүй учраас
+  //     warning гардаг. Production дээр зөв ажилладаг.
+  //   → workerd-н ирээдүйн хувилбарт startup-time error болвол
+  //     @opennextjs/cloudflare шинэчлэлтийг хянах хэрэгтэй.
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_CACHE_DO_QUEUE",
+        "class_name": "DOQueueHandler"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOQueueHandler"]
+    }
+  ],
+
+  // ─── BUNNY.NET TOKEN AUTH ТОХИРГОО ───────────────────────────────────────
+  //
+  // 1. BUNNY DASHBOARD дээр хийх (нэг удаа):
+  //    Stream → jan [634549] → Security → General
+  //      ✅ Block direct url file access     → Toggle ON
+  //      ✅ Embed view token authentication  → Toggle ON
+  //    "Token authentication key" хэсгээс API key-г хуулна (👁 → 📋)
+  //
+  // 2. CLOUDFLARE дээр нэмэх:
+  //    Workers & Pages → odoo → Settings → Variables and Secrets → + Add
+  //      Type:  Secret
+  //      Name:  BUNNY_STREAM_TOKEN_KEY
+  //      Value: (Bunny-с хуулсан API key)
+  //
+  // 3. On-demand revalidation нэмэлт secret:
+  //    Name:  REVALIDATE_SECRET
+  //    Value: (дурын урт random string, жишээ: openssl rand -hex 32)
+  //
+  // ─────────────────────────────────────────────────────────────────────────
+}
