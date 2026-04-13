@@ -21,11 +21,11 @@ export function useTheme() {
 const VALID: Theme[] = ['abyss', 'crimson', 'aurora', 'ember', 'forest'];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('abyss');
+  const [theme, setThemeState] = useState<Theme>('crimson');
 
   useEffect(() => {
     const saved = localStorage.getItem('narhan-theme') as Theme | null;
-    const initial = saved && VALID.includes(saved) ? saved : 'abyss';
+    const initial = saved && VALID.includes(saved) ? saved : 'crimson';
     setThemeState(initial);
     document.documentElement.setAttribute('data-theme', initial);
   }, []);

@@ -110,12 +110,11 @@
   border: 0.5px solid color-mix(in oklch, var(--border) 50%, transparent);
 }
 
-/* ── Header — minimal, цэвэр ── */
+/* ── Header — Netflix fixed (handled inline) ── */
 header {
-  background: color-mix(in oklch, var(--background) 80%, transparent) !important;
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border-bottom-color: var(--border) !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border-bottom: none !important;
 }
 
 /* ── Hero animate-in ── */
@@ -361,3 +360,21 @@ header {
 
 /* ── Smooth page transitions ── */
 @view-transition { navigation: auto; }
+
+/* ── Netflix dark BG override ── */
+body, .bg-background {
+  background: #0b0e1a !important;
+}
+
+/* ── Hero carousel poster hover ── */
+.hero-side-poster:hover {
+  opacity: 0.65 !important;
+  filter: brightness(0.8) !important;
+}
+
+/* ── Search page grid hover ── */
+a:hover .hover\:opacity-100 { opacity: 1; }
+
+/* ── Watchlist page ── */
+.group:hover .group-hover\:opacity-100 { opacity: 1; }
+.group:hover .group-hover\:scale-105 { transform: scale(1.05); }

@@ -47,7 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 (function(){
   var VALID=['abyss','crimson','aurora','ember','forest'];
   var t=localStorage.getItem('narhan-theme');
-  document.documentElement.setAttribute('data-theme',VALID.includes(t)?t:'abyss');
+  document.documentElement.setAttribute('data-theme',VALID.includes(t)?t:'crimson');
 })();
         `}} />
       </head>
