@@ -41,9 +41,11 @@ const CAT_LABEL: Record<string, string> = {
 function SnapCard({
   movie,
   isActive,
+  'data-id': dataId,
 }: {
   movie: MongolMovie;
   isActive: boolean;
+  'data-id'?: number;
 }) {
   const [wl, setWl] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -68,6 +70,7 @@ function SnapCard({
   return (
     <div
       // scroll-snap-align: center → энэ card scroll-н голд тэгшилнэ
+      data-id={dataId}
       style={{
         scrollSnapAlign: 'center',
         flexShrink: 0,
@@ -391,10 +394,7 @@ export default function SnapRow({
         }}
       >
         {movies.map((m) => (
-          // data-id → IntersectionObserver card-г таних
-          <div key={m.id} data-id={m.id} style={{ display: 'contents' }}>
-            <SnapCard movie={m} isActive={activeId === m.id} />
-          </div>
+          <SnapCard key={m.id} movie={m} isActive={activeId === m.id} data-id={m.id} />
         ))}
       </div>
     </section>
