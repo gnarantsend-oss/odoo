@@ -126,11 +126,11 @@ function Hero({ movies }: { movies: MongolMovie[] }) {
 
       {/* ── Overlay давхаргууд ── */}
       {/* Ерөнхий харанхуй */}
-      <div style={{ position:'absolute', inset:0, zIndex:2, background:'rgba(8,11,24,0.48)' }} />
+      <div style={{ position:'absolute', inset:0, zIndex:2, background:'rgba(8,11,24,0.18)' }} />
       {/* Дээд */}
-      <div style={{ position:'absolute', top:0, left:0, right:0, height:'42%', zIndex:3, background:'linear-gradient(to bottom, #080b18 0%, rgba(8,11,24,0.8) 40%, transparent 100%)' }} />
+      <div style={{ position:'absolute', top:0, left:0, right:0, height:'42%', zIndex:3, background:'linear-gradient(to bottom, #080b18 0%, rgba(8,11,24,0.55) 40%, transparent 100%)' }} />
       {/* Доод */}
-      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'42%', zIndex:3, background:'linear-gradient(to top, #080b18 0%, rgba(8,11,24,0.8) 40%, transparent 100%)' }} />
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'42%', zIndex:3, background:'linear-gradient(to top, #080b18 0%, rgba(8,11,24,0.55) 40%, transparent 100%)' }} />
       {/* Зүүн */}
       <div style={{ position:'absolute', top:0, left:0, bottom:0, width:'18%', zIndex:3, background:'linear-gradient(to right, #080b18 0%, transparent 100%)' }} />
       {/* Баруун */}
@@ -336,28 +336,30 @@ export default function MongolTab() {
         {CATEGORIES.map((cat, i) => (
           <div key={cat.key}>
             {BANNERS[i] && (
-              <a
-                href={BANNERS[i].href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'block',
-                  margin: '0 0 28px',
-                  overflow: 'hidden',
-                  height: '250px',
-                  border: '0',
-                  cursor: 'pointer',
-                  transition: 'opacity 0.2s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
-              >
-                <img
-                  src={BANNERS[i].img}
-                  alt={BANNERS[i].alt ?? 'banner'}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                />
-              </a>
+              <div style={{ padding: '0 16px', marginBottom: '28px' }}>
+                <a
+                  href={BANNERS[i].href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'block',
+                    overflow: 'hidden',
+                    borderRadius: '10px',
+                    height: 'clamp(120px, 30vw, 250px)',
+                    border: '0',
+                    cursor: 'pointer',
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+                >
+                  <img
+                    src={BANNERS[i].img}
+                    alt={BANNERS[i].alt ?? 'Зар'}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </a>
+              </div>
             )}
             <Row cat={cat} movies={movies.filter(m => m.category === cat.key)} />
           </div>
