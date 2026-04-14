@@ -3,22 +3,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { saveCW, getCW } from '@/lib/watchlist';
+import type { MongolMovie } from '@/lib/types';
 
-type Episode = { ep: number; title: string; iframe: string };
-type MongolMovie = {
-  id: number; name: string; category: string; poster: string;
-  iframe?: string; preview?: string; episodes?: Episode[];
-};
-
-const CW_KEY = 'narhan-continue';
-function saveCW(movieId: number, epIndex: number) {
-  try {
-    const list: { id: number; ep: number; ts: number }[] = JSON.parse(localStorage.getItem(CW_KEY) || '[]');
-    const filtered = list.filter(x => x.id !== movieId);
-    filtered.unshift({ id: movieId, ep: epIndex, ts: Date.now() });
-    localStorage.setItem(CW_KEY, JSON.stringify(filtered.slice(0, 20)));
-  } catch {}
-}
 
 // ── Auto-next banner ──────────────────────────────────────────────────────────
 function AutoNextBanner({ epTitle, onConfirm, onCancel }: {
@@ -69,7 +56,7 @@ export function MongolPlayer({ movie }: { movie: MongolMovie }) {
 
   const [epIndex, setEpIndex] = useState(() => {
     try {
-      const list: { id: number; ep: number }[] = JSON.parse(localStorage.getItem(CW_KEY) || '[]');
+      const list = getCW();
       const found = list.find(x => x.id === movie.id);
       if (found && found.ep < (movie.episodes?.length ?? 1)) return found.ep;
     } catch {}

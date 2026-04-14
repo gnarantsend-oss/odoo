@@ -5,11 +5,11 @@ import Image from 'next/image';
 import { Play, Trash2, ArrowLeft } from 'lucide-react';
 import moviesJson from '@/lib/mongol_movies.json';
 import { getWatchlist, toggleWatchlist } from '@/lib/watchlist';
+import type { MongolMovie } from '@/lib/types';
+import { CAT_LABEL } from '@/lib/types';
 import Header from '@/components/header';
 
-type MongolMovie = { id: number; name: string; category: string; poster: string; episodes?: { ep: number; title: string; iframe: string }[] };
 const MOVIES = moviesJson as MongolMovie[];
-const CAT_LABEL: Record<string, string> = { drama: 'Драм', horror: 'Аймшиг', comedy: 'Инээдэм', trailer: 'Трейлер' };
 
 export default function WatchlistPage() {
   const [wl, setWl] = useState<number[]>([]);

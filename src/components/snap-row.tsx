@@ -18,24 +18,8 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Play, ChevronLeft, ChevronRight, Plus, Check } from 'lucide-react';
 import { getWatchlist, toggleWatchlist } from '@/lib/watchlist';
-
-// ── Type ──────────────────────────────────────────────────────
-type MongolMovie = {
-  id: number;
-  name: string;
-  category: string;
-  poster: string;
-  iframe?: string;
-  preview?: string;
-  episodes?: { ep: number; title: string; iframe: string }[];
-};
-
-const CAT_LABEL: Record<string, string> = {
-  drama: 'Драм',
-  horror: 'Аймшиг',
-  comedy: 'Инээдэм',
-  trailer: 'Трейлер',
-};
+import type { MongolMovie } from '@/lib/types';
+import { CAT_LABEL } from '@/lib/types';
 
 // ── Snap Card ────────────────────────────────────────────────
 function SnapCard({
@@ -109,6 +93,7 @@ function SnapCard({
             src={movie.poster}
             alt={movie.name}
             loading="lazy"
+            draggable={false}
             style={{
               width: '100%',
               height: '100%',
@@ -238,26 +223,42 @@ export default function SnapRow({
   const [activeId, setActiveId] = useState<number | null>(null);
 
   // ── Grab scroll (хуруугаараар чирэх) ──────────────────────
-  const drag = useRef({ active: false, startX: 0, scrollLeft: 0 });
+  // moved: үнэхээр чирсэн эсэх — click-тэй ялгахад хэрэглэнэ
+  const drag = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false });
 
   const onPointerDown = (e: React.PointerEvent) => {
     const el = scrollRef.current;
     if (!el) return;
-    drag.current = { active: true, startX: e.clientX, scrollLeft: el.scrollLeft };
+    drag.current = { active: true, startX: e.clientX, scrollLeft: el.scrollLeft, moved: false };
     el.style.cursor = 'grabbing';
-    el.setPointerCapture(e.pointerId);
+    // setPointerCapture эндээс хасав — drag эхэлсэн үед л хийнэ
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!drag.current.active || !scrollRef.current) return;
-    // scroll-snap нь pointerup-д л тэгшилнэ тул move-д чөлөөтэй гүйнэ
-    scrollRef.current.scrollLeft =
-      drag.current.scrollLeft - (e.clientX - drag.current.startX);
+    const dx = Math.abs(e.clientX - drag.current.startX);
+    if (dx > 6) {
+      drag.current.moved = true;
+      if (!scrollRef.current.hasPointerCapture(e.pointerId)) {
+        scrollRef.current.setPointerCapture(e.pointerId);
+      }
+      scrollRef.current.scrollLeft =
+        drag.current.scrollLeft - (e.clientX - drag.current.startX);
+    }
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
     drag.current.active = false;
     if (scrollRef.current) scrollRef.current.style.cursor = 'grab';
+  };
+
+  // Drag хийсэн бол click-г зогсооно
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (drag.current.moved) {
+      drag.current.moved = false;
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
   // ── Intersection Observer — голд байгаа card илрүүлэх ──────
@@ -380,6 +381,7 @@ export default function SnapRow({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onClickCapture={onClickCapture}
         className="scrollbar-hide"
         style={{
           display: 'flex',
@@ -387,6 +389,8 @@ export default function SnapRow({
           overflowX: 'auto',
           padding: '14px 4% 20px',
           cursor: 'grab',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
 
           // ── Netflix scroll-snap тохиргоо ──────────────────
           scrollSnapType: 'x mandatory',   // scroll зогсоход snap

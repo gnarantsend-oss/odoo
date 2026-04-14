@@ -8,16 +8,7 @@ import { signMovieIframes } from '@/lib/bunny';
 
 import moviesData from '@/lib/mongol_movies.json';
 
-type Episode = { ep: number; title: string; iframe: string };
-type MongolMovie = {
-  id: number;
-  name: string;
-  category: string;
-  poster: string;
-  iframe?: string;
-  preview?: string;
-  episodes?: Episode[];
-};
+import type { MongolMovie } from '@/lib/types';
 
 const movies: MongolMovie[] = moviesData as MongolMovie[];
 

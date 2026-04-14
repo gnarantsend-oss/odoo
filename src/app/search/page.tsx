@@ -6,23 +6,12 @@ import Image from 'next/image';
 import { Play, ArrowLeft, Search as SearchIcon } from 'lucide-react';
 import moviesJson from '@/lib/mongol_movies.json';
 import Header from '@/components/header';
+import type { MongolMovie } from '@/lib/types';
+import { CAT_LABEL, CATEGORIES } from '@/lib/types';
 
-type MongolMovie = {
-  id: number; name: string; category: string; poster: string;
-  iframe?: string; episodes?: { ep: number; title: string; iframe: string }[];
-};
 
 const MOVIES = moviesJson as MongolMovie[];
-const CAT_LABEL: Record<string, string> = {
-  drama: 'Драм', horror: 'Аймшиг', comedy: 'Инээдэм', trailer: 'Трейлер',
-};
 
-const CATEGORIES = [
-  { key: 'drama',   label: '🎭 Драм',     count: MOVIES.filter(m => m.category === 'drama').length },
-  { key: 'horror',  label: '👻 Аймшиг',   count: MOVIES.filter(m => m.category === 'horror').length },
-  { key: 'comedy',  label: '😂 Инээдэм',  count: MOVIES.filter(m => m.category === 'comedy').length },
-  { key: 'trailer', label: '🎞 Трейлер',  count: MOVIES.filter(m => m.category === 'trailer').length },
-];
 
 function SearchContent() {
   const router = useRouter();
@@ -119,12 +108,6 @@ function SearchContent() {
                 }}
               >
                 {cat.label}
-                <span style={{
-                  marginLeft: '6px', fontSize: '11px',
-                  opacity: 0.65,
-                }}>
-                  {cat.count}
-                </span>
               </button>
             ))}
           </div>

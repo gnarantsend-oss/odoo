@@ -3,21 +3,12 @@
 import Header from '@/components/header';
 import moviesJson from '@/lib/mongol_movies.json';
 import SnapRow from '@/components/snap-row';
+import type { MongolMovie } from '@/lib/types';
+import { CATEGORIES } from '@/lib/types';
 
-type MongolMovie = {
-  id: number; name: string; category: string; poster: string;
-  iframe?: string; preview?: string;
-  episodes?: { ep: number; title: string; iframe: string }[];
-};
 
 const MOVIES = moviesJson as MongolMovie[];
 
-const CATEGORIES = [
-  { key: 'drama',   label: '🎭 Драм' },
-  { key: 'horror',  label: '👻 Аймшиг' },
-  { key: 'comedy',  label: '😂 Инээдэм' },
-  { key: 'trailer', label: '🎞 Трейлер' },
-];
 
 export default function MongolPage() {
   return (

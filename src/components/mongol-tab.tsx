@@ -6,20 +6,11 @@ import { Play, ChevronLeft, ChevronRight, Plus, Check } from 'lucide-react';
 import moviesJson from '@/lib/mongol_movies.json';
 import { getWatchlist, toggleWatchlist, getCW } from '@/lib/watchlist';
 import BANNERS from '@/lib/banners';
+import type { MongolMovie } from '@/lib/types';
+import { CAT_LABEL, CATEGORIES } from '@/lib/types';
 import SnapRow from '@/components/snap-row';
 
-type MongolMovie = {
-  id: number; name: string; category: string; poster: string;
-  iframe?: string; preview?: string; episodes?: { ep: number; title: string; iframe: string }[];
-};
 
-const CATEGORIES = [
-  { key: 'drama',   label: '🎭 Драм' },
-  { key: 'horror',  label: '👻 Аймшиг' },
-  { key: 'comedy',  label: '😂 Инээдэм' },
-  { key: 'trailer', label: '🎞 Трейлер' },
-];
-const CAT_LABEL: Record<string, string> = { drama: 'Драм', horror: 'Аймшиг', comedy: 'Инээдэм', trailer: 'Трейлер' };
 
 // ══════════════════════════════════════════════════════
 
@@ -235,94 +226,7 @@ function RowHeader({ title, count, showAll = true }: { title: string; count: num
   );
 }
 
-// ── 3D CARD ───────────────────────────────────────────────────────────────────
-function Card({ movie }: { movie: MongolMovie }) {
-  const [hovered, setHovered] = useState(false);
-  const [wl, setWl]           = useState(false);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const href = `/mongol/watch/${movie.id}`;
 
-  useEffect(() => { setWl(getWatchlist().includes(movie.id)); }, [movie.id]);
-
-  const onMouseEnter = () => { hoverTimer.current = setTimeout(() => setHovered(true), 180); };
-  const onMouseLeave = () => { if (hoverTimer.current) clearTimeout(hoverTimer.current); setHovered(false); };
-
-  const handleWL = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation();
-    setWl(toggleWatchlist(movie.id));
-  };
-
-  return (
-    <div className="flex-shrink-0" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
-      style={{ width: 'clamp(135px,16vw,185px)', position: 'relative', zIndex: hovered ? 30 : 1 }}>
-      <div style={{
-        borderRadius: '10px', overflow: 'hidden',
-        background: 'rgba(255,255,255,0.04)',
-        border: '0.5px solid rgba(255,255,255,0.07)',
-        transform: hovered ? 'scale(1.1) translateY(-8px) perspective(600px) rotateX(2deg)' : 'scale(1)',
-        boxShadow: hovered ? '0 28px 70px rgba(0,0,0,0.8), 0 0 0 1.5px rgba(229,9,20,0.35)' : '0 4px 16px rgba(0,0,0,0.4)',
-        transition: 'transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease',
-      }}>
-        <Link href={href} style={{ display: 'block', aspectRatio: '2/3', position: 'relative', overflow: 'hidden' }}>
-          <img src={movie.poster} alt={movie.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: hovered ? 'scale(1.06)' : 'scale(1)', transition: 'transform 0.5s ease' }} />
-          {movie.preview && hovered && <img src={movie.preview} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%)', opacity: hovered ? 1 : 0, transition: 'opacity 0.3s', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: hovered ? 'scale(1)' : 'scale(0.7)', transition: 'transform 0.3s cubic-bezier(.22,.68,0,1.2)' }}>
-              <Play size={16} fill="#0b0e1a" color="#0b0e1a" />
-            </div>
-          </div>
-          {movie.episodes && <span style={{ position: 'absolute', top: '7px', left: '7px', background: 'rgba(0,0,0,0.78)', color: 'white', fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '4px' }}>{movie.episodes.length} анги</span>}
-          <button onClick={handleWL} style={{ position: 'absolute', top: '7px', right: '7px', width: '26px', height: '26px', borderRadius: '50%', background: wl ? 'rgba(56,208,240,0.25)' : 'rgba(0,0,0,0.65)', border: `1px solid ${wl ? 'rgba(56,208,240,0.6)' : 'rgba(255,255,255,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(6px)', opacity: hovered ? 1 : 0, transform: hovered ? 'scale(1)' : 'scale(0.7)', transition: 'all 0.25s' }}>
-            {wl ? <Check size={11} color="#38d0f0" /> : <Plus size={11} color="white" />}
-          </button>
-        </Link>
-        <div style={{ padding: hovered ? '10px' : '8px 10px', maxHeight: hovered ? '80px' : '44px', overflow: 'hidden', transition: 'max-height 0.3s ease, padding 0.3s ease', background: hovered ? 'rgba(18,20,32,1)' : 'transparent' }}>
-          <Link href={href} style={{ textDecoration: 'none' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.88)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: hovered ? '5px' : '2px' }}>{movie.name}</p>
-          </Link>
-          {hovered && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.38)' }}>{CAT_LABEL[movie.category]}</span>
-              <Link href={href}><span style={{ fontSize: '10px', color: '#e50914', fontWeight: 700, cursor: 'pointer' }}>Үзэх →</span></Link>
-            </div>
-          )}
-          {!hovered && <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.32)' }}>{CAT_LABEL[movie.category]}</p>}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── CATEGORY ROW ──────────────────────────────────────────────────────────────
-function Row({ cat, movies }: { cat: { key: string; label: string }; movies: MongolMovie[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const scroll = (d: 'l' | 'r') => ref.current?.scrollBy({ left: d === 'l' ? -420 : 420, behavior: 'smooth' });
-  if (!movies.length) return null;
-
-  return (
-    <section className="row-section" style={{ marginBottom: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4%', marginBottom: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-          <h2 style={{ fontSize: '19px', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>{cat.label}</h2>
-          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{movies.length}</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '12px', color: '#e50914', fontWeight: 700, cursor: 'pointer' }}>Бүгд ›</span>
-          <div className="hidden sm:flex" style={{ gap: '4px' }}>
-            {(['l', 'r'] as const).map(d => (
-              <button key={d} onClick={() => scroll(d)} style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '0.5px solid rgba(255,255,255,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                {d === 'l' ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div ref={ref} className="scrollbar-hide" style={{ display: 'flex', gap: '10px', overflowX: 'auto', padding: '12px 4% 16px', cursor: 'grab' }}>
-        {movies.map(m => <Card key={m.id} movie={m} />)}
-      </div>
-    </section>
-  );
-}
 
 // ── MAIN ──────────────────────────────────────────────────────────────────────
 export default function MongolTab() {
