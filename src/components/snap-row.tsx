@@ -278,7 +278,8 @@ export default function SnapRow({
             best = { id, ratio: entry.intersectionRatio };
           }
         });
-        if (best && best.ratio > 0.5) setActiveId(best.id);
+        const b = best as { id: number; ratio: number } | null;
+        if (b && b.ratio > 0.5) setActiveId(b.id);
       },
       {
         root: el,
