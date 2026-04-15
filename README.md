@@ -415,9 +415,21 @@ REVALIDATE_SECRET=xxxxxxxxxxxxxxxxxxxx
 bun install
 ```
 
+Хэрвээ Bun суусан биш бол:
+
+```bash
+npm install
+```
+
 ### 2. Local дээр ажиллуулах
 ```bash
 bun dev        # http://localhost:9002
+```
+
+NPM ашиглах бол:
+
+```bash
+npm run dev     # http://localhost:9002
 ```
 
 ### 3. Cloudflare Workers дээр preview хийх
@@ -430,6 +442,15 @@ bun run preview
 bun run deploy
 ```
 > `deploy` = OpenNext build → R2 cache цэвэрлэх → Wrangler deploy
+
+---
+
+## ✅ Нэг командаар шалгах (мэргэжлийн workflow)
+
+```bash
+npm run typecheck
+npm run lint
+```
 
 ---
 
