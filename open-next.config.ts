@@ -55,6 +55,6 @@ export default defineCloudflareConfig({
   // Tag-based invalidation: deploy болгонд R2 бүрэн устгахгүй
   tagCache: doShardedTagCache({ baseShardSize: 12 }),
   // revalidation болоход edge cache автоматаар цэвэрлэгдэнэ
-  cachePurge: purgeCache,
+  cachePurge: purgeCache({ type: 'direct' }),
   enableCacheInterception: true,
 });
