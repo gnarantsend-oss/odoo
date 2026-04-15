@@ -29,7 +29,7 @@ function SnapCard({
 }: {
   movie: MongolMovie;
   isActive: boolean;
-  'data-id'?: number;
+  'data-id'?: string;
 }) {
   const [wl, setWl] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -220,7 +220,7 @@ export default function SnapRow({
   movies: MongolMovie[];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeId, setActiveId] = useState<number | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   // ── Grab scroll (хуруугаараар чирэх) ──────────────────────
   // moved: үнэхээр чирсэн эсэх — click-тэй ялгахад хэрэглэнэ
@@ -264,7 +264,7 @@ export default function SnapRow({
   // ── Intersection Observer — голд байгаа card илрүүлэх ──────
   const observerRef = useRef<IntersectionObserver | null>(null);
   // Бүх card-н ratio-г хадгална — entries зөвхөн өөрчлөгдсөнийг агуулдаг
-  const ratioMap = useRef<Map<number, number>>(new Map());
+  const ratioMap = useRef<Map<string, number>>(new Map());
 
   const setupObserver = useCallback(() => {
     observerRef.current?.disconnect();
@@ -277,11 +277,11 @@ export default function SnapRow({
       (entries) => {
         // Өөрчлөгдсөн card-уудын ratio шинэчилнэ
         entries.forEach((entry) => {
-          const id = Number((entry.target as HTMLElement).dataset.id);
-          ratioMap.current.set(id, entry.intersectionRatio);
+          const id = (entry.target as HTMLElement).dataset.id;
+          if (id) ratioMap.current.set(id, entry.intersectionRatio);
         });
         // Бүх card-с хамгийн их ratio-тайг олно
-        let bestId: number | null = null;
+        let bestId: string | null = null;
         let bestRatio = 0;
         ratioMap.current.forEach((ratio, id) => {
           if (ratio > bestRatio) { bestRatio = ratio; bestId = id; }

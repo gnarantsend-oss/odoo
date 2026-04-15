@@ -1,16 +1,12 @@
-'use client';
-
 import Header from '@/components/header';
-import moviesJson from '@/lib/mongol_movies.json';
 import SnapRow from '@/components/snap-row';
-import type { MongolMovie } from '@/lib/types';
 import { CATEGORIES } from '@/lib/types';
+import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
+export const revalidate = 300;
 
-const MOVIES = moviesJson as MongolMovie[];
-
-
-export default function MongolPage() {
+export default async function MongolPage() {
+  const MOVIES = await getMongolMoviesFromBunny();
   return (
     <div style={{ minHeight: '100vh', background: '#0b0e1a', color: '#fff' }}>
       <Header />

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import type { MongolMovie } from '@/lib/types';
 
 /**
  * Bunny Stream — Token Authentication
@@ -57,4 +58,121 @@ export function signMovieIframes<
       iframe: signBunnyIframe(ep.iframe, expiresInSeconds),
     })),
   };
+}
+
+// ── Bunny Stream API (Video list) ──────────────────────────────────────────────
+type BunnyVideoListItem = {
+  guid: string;
+  title: string;
+  videoLibraryId?: number;
+  thumbnailFileName?: string | null;
+  collectionId?: string | null;
+};
+
+type BunnyVideoDetail = BunnyVideoListItem & {
+  length?: number;
+  status?: number;
+};
+
+type BunnyPaginated<T> = {
+  items?: T[];
+  currentPage?: number;
+  totalItems?: number;
+  itemsPerPage?: number;
+};
+
+function getBunnyLibraryId(): string {
+  return process.env.BUNNY_LIBRARY_ID || '12345';
+}
+
+function getBunnyApiKey(): string | undefined {
+  return process.env.BUNNY_STREAM_API_KEY;
+}
+
+function getBunnyCdnHostname(libraryId: string): string {
+  // Bunny dashboard дээр "CDN hostname" гэж гардаг (ж: vz-e6562a2b-a7e.b-cdn.net)
+  // Тохируулаагүй бол хуучин хэв маягийн vz-{libraryId}.b-cdn.net гэж үзнэ.
+  return process.env.BUNNY_CDN_HOSTNAME || `vz-${libraryId}.b-cdn.net`;
+}
+
+function bunnyThumbUrl(libraryId: string, guid: string, thumbnailFileName?: string | null) {
+  const file = thumbnailFileName || 'thumbnail.jpg';
+  // Bunny Stream storage structure: https://docs.bunny.net/docs/stream-video-storage-structure
+  const host = getBunnyCdnHostname(libraryId);
+  return `https://${host}/${guid}/${file}`;
+}
+
+function bunnyEmbedUrl(libraryId: string, guid: string) {
+  return `https://iframe.mediadelivery.net/embed/${libraryId}/${guid}`;
+}
+
+function guessCategory(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes('trailer') || t.includes('трейлер')) return 'trailer';
+  if (t.includes('horror') || t.includes('аймшиг')) return 'horror';
+  if (t.includes('comedy') || t.includes('инээдэм')) return 'comedy';
+  return 'drama';
+}
+
+export function bunnyVideoToMovie(v: BunnyVideoListItem): MongolMovie {
+  const libraryId = getBunnyLibraryId();
+  return {
+    id: v.guid,
+    name: v.title,
+    category: guessCategory(v.title),
+    poster: bunnyThumbUrl(libraryId, v.guid, v.thumbnailFileName),
+    iframe: bunnyEmbedUrl(libraryId, v.guid),
+  };
+}
+
+export async function getBunnyVideos(opts?: {
+  page?: number;
+  itemsPerPage?: number;
+  search?: string;
+  orderBy?: string;
+}): Promise<BunnyVideoListItem[]> {
+  const libraryId = getBunnyLibraryId();
+  const apiKey = getBunnyApiKey();
+  if (!apiKey) return [];
+
+  const page = opts?.page ?? 1;
+  const itemsPerPage = opts?.itemsPerPage ?? 100;
+  const orderBy = opts?.orderBy ?? 'date';
+  const search = opts?.search ?? '';
+
+  const url = new URL(`https://video.bunnycdn.com/library/${libraryId}/videos`);
+  url.searchParams.set('page', String(page));
+  url.searchParams.set('itemsPerPage', String(itemsPerPage));
+  url.searchParams.set('orderBy', orderBy);
+  if (search) url.searchParams.set('search', search);
+
+  const res = await fetch(url.toString(), {
+    headers: { AccessKey: apiKey },
+    // Next.js App Router cache control (SSR/ISR friendly)
+    next: { revalidate: 300, tags: ['movies'] },
+  });
+  if (!res.ok) return [];
+
+  const json = (await res.json()) as BunnyPaginated<BunnyVideoListItem> | BunnyVideoListItem[];
+  if (Array.isArray(json)) return json;
+  return json.items ?? [];
+}
+
+export async function getBunnyVideo(videoId: string): Promise<BunnyVideoDetail | null> {
+  const libraryId = getBunnyLibraryId();
+  const apiKey = getBunnyApiKey();
+  if (!apiKey) return null;
+
+  const res = await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`, {
+    headers: { AccessKey: apiKey },
+    next: { revalidate: 1800, tags: [`movie-${videoId}`] },
+  });
+  if (!res.ok) return null;
+  return (await res.json()) as BunnyVideoDetail;
+}
+
+export async function getMongolMoviesFromBunny(): Promise<MongolMovie[]> {
+  const videos = await getBunnyVideos({ itemsPerPage: 100 });
+  // UI нь categories-ээр grouped; бүх видео "drama" гэж очвол ч ажиллана
+  return videos.map(bunnyVideoToMovie);
 }

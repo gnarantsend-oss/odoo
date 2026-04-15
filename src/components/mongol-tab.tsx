@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-
-import moviesJson from '@/lib/mongol_movies.json';
 import { getWatchlist, toggleWatchlist, getCW } from '@/lib/watchlist';
 import BANNERS from '@/lib/banners';
 import type { MongolMovie } from '@/lib/types';
@@ -179,7 +177,7 @@ function Hero({ movies }: { movies: MongolMovie[] }) {
 
 // ── CONTINUE WATCHING ─────────────────────────────────────────────────────────
 function ContinueRow({ movies }: { movies: MongolMovie[] }) {
-  const [cw, setCw] = useState<{ id: number; ep: number; progress?: number }[]>([]);
+  const [cw, setCw] = useState<{ id: string; ep: number; progress?: number }[]>([]);
   useEffect(() => { setCw(getCW()); }, []);
   const list = cw
     .map(({ id, ep, progress }) => ({ m: movies.find(x => x.id === id), ep, p: progress ?? 20 }))
@@ -229,8 +227,7 @@ function RowHeader({ title, count, showAll = true }: { title: string; count: num
 
 
 // ── MAIN ──────────────────────────────────────────────────────────────────────
-export default function MongolTab() {
-  const movies = moviesJson as MongolMovie[];
+export default function MongolTab({ movies }: { movies: MongolMovie[] }) {
   if (!movies.length) return <div style={{ textAlign: 'center', padding: '96px', color: 'rgba(255,255,255,0.3)' }}>Кино байхгүй байна</div>;
 
   return (

@@ -4,13 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MongolPlayer } from './mongol-player';
-import { signMovieIframes } from '@/lib/bunny';
-
-import moviesData from '@/lib/mongol_movies.json';
-
-import type { MongolMovie } from '@/lib/types';
-
-const movies: MongolMovie[] = moviesData as MongolMovie[];
+import { signMovieIframes, getBunnyVideo, bunnyVideoToMovie } from '@/lib/bunny';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -20,13 +14,10 @@ type Props = { params: Promise<{ id: string }> };
 // Deploy хийхэд cache устгагддаггүй — ISR автоматаар шинэчилнэ.
 export const revalidate = 1800; // 30 минут
 
-export async function generateStaticParams() {
-  return movies.map((m) => ({ id: String(m.id) }));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const movie = movies.find((m) => m.id === Number(id));
+  const v = await getBunnyVideo(id);
+  const movie = v ? bunnyVideoToMovie(v) : null;
   if (!movie) return { title: 'Кино олдсонгүй' };
   return {
     title: `${movie.name} — Narhan TV`,
@@ -41,7 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MongolWatchPage({ params }: Props) {
   const { id } = await params;
-  const movie = movies.find((m) => m.id === Number(id));
+  const v = await getBunnyVideo(id);
+  const movie = v ? bunnyVideoToMovie(v) : null;
 
   if (!movie) notFound();
 

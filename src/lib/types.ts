@@ -4,7 +4,8 @@
 export type Episode = { ep: number; title: string; iframe: string };
 
 export type MongolMovie = {
-  id: number;
+  // Bunny Stream GUID (string) эсвэл бусад source-н тогтвортой id
+  id: string;
   name: string;
   category: string;
   poster: string;
