@@ -2,9 +2,9 @@ import Header from '@/components/header';
 import MongolTab from '@/components/mongol-tab';
 import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
-// ISR: 1 минут тутам шинэчлэгдэнэ
-// force-dynamic устгасан — revalidate ажиллаж ISR горимд ажиллана
-export const revalidate = 60;
+// Runtime-д server render хийнэ — build үед статик render хийхгүй
+// Cloudflare R2 ISR cache давхаргаар кэшлэгдэнэ
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const movies = await getMongolMoviesFromBunny();
