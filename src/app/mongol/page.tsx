@@ -1,12 +1,12 @@
 import Header from '@/components/header';
 import SnapRow from '@/components/snap-row';
 import { CATEGORIES } from '@/lib/types';
-import { getMongolMoviesFromBunny } from '@/lib/bunny';
+import { getMongolMoviesCached } from '@/lib/bunny';
 
 export const revalidate = 300;
 
 export default async function MongolPage() {
-  const MOVIES = await getMongolMoviesFromBunny().catch((err) => {
+  const MOVIES = await getMongolMoviesCached().catch((err) => {
     console.error('[mongol] failed to load bunny movies', err);
     return [];
   });

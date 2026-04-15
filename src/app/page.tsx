@@ -1,11 +1,11 @@
 import Header from '@/components/header';
 import MongolTab from '@/components/mongol-tab';
-import { getMongolMoviesFromBunny } from '@/lib/bunny';
+import { getMongolMoviesCached } from '@/lib/bunny';
 
 export const revalidate = 300;
 
 export default async function Home() {
-  const movies = await getMongolMoviesFromBunny().catch((err) => {
+  const movies = await getMongolMoviesCached().catch((err) => {
     console.error('[home] failed to load bunny movies', err);
     return [];
   });

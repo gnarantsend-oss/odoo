@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MongolPlayer } from './mongol-player';
-import { signMovieIframes, getBunnyVideo, bunnyVideoToMovie } from '@/lib/bunny';
+import { signMovieIframes, getMongolMovieByIdCached, getMongolMoviesCached } from '@/lib/bunny';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -13,11 +13,17 @@ type Props = { params: Promise<{ id: string }> };
 // Regional cache edge-д хадгалагдана, R2 load бага байна.
 // Deploy хийхэд cache устгагддаггүй — ISR автоматаар шинэчилнэ.
 export const revalidate = 1800; // 30 минут
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const movies = await getMongolMoviesCached().catch(() => []);
+  // Pre-render top items for faster first paint.
+  return movies.slice(0, 200).map((movie) => ({ id: movie.id }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const v = await getBunnyVideo(id);
-  const movie = v ? bunnyVideoToMovie(v) : null;
+  const movie = await getMongolMovieByIdCached(id);
   if (!movie) return { title: 'Кино олдсонгүй' };
   return {
     title: `${movie.name} — Narhan TV`,
@@ -32,8 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MongolWatchPage({ params }: Props) {
   const { id } = await params;
-  const v = await getBunnyVideo(id);
-  const movie = v ? bunnyVideoToMovie(v) : null;
+  const movie = await getMongolMovieByIdCached(id);
 
   if (!movie) notFound();
 
