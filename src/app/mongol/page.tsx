@@ -4,6 +4,7 @@ import { CATEGORIES } from '@/lib/types';
 import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
 export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export default async function MongolPage() {
   const MOVIES = await getMongolMoviesFromBunny();

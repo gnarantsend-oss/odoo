@@ -3,6 +3,7 @@ import MongolTab from '@/components/mongol-tab';
 import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
 export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const movies = await getMongolMoviesFromBunny();
