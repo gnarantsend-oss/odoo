@@ -5,14 +5,20 @@ import { HeroOverlays } from './hero/Overlays';
 import { HeroTitleBlock } from './hero/TitleBlock';
 import { HeroScrollHint } from './hero/ScrollHint';
 
+const HERO_POOL_SIZE = 36;
+const LANE_ITEM_CAP = 24;
+
 export function Hero({ movies }: { movies: MongolMovie[] }) {
-  const all = movies.filter((m) => m.category !== 'trailer');
+  // Keep hero payload small for fast first paint.
+  const all = movies
+    .filter((m) => m.category !== 'trailer')
+    .slice(0, HERO_POOL_SIZE);
   const n = all.length;
 
   const makeLane = (offset: number) => {
     if (!n) return [];
     const shifted = [...all.slice(offset % n), ...all.slice(0, offset % n)];
-    return [...shifted, ...shifted];
+    return [...shifted, ...shifted].slice(0, LANE_ITEM_CAP);
   };
 
   const lanes: readonly HeroLane[] = [
