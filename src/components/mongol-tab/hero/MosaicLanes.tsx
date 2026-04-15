@@ -30,7 +30,7 @@ export function HeroMosaicLanes({ lanes }: { lanes: readonly HeroLane[] }) {
           <div className={`ms-track ms-${lane.dir}`} style={{ '--spd': lane.speed } as React.CSSProperties}>
             {lane.items.map((m, i) => {
               const sz = SIZE_PATTERN[(i + lane.offset * 3) % SIZE_PATTERN.length];
-              const src = m.preview || m.poster;
+              const src = m.poster; // preview.webp биш poster ашиглана — 219 concurrent request-ийг багасгана
               return (
                 <div key={`${ri}-${i}`} className="ms-card" style={{ width: sz.w, height: lane.rowH }}>
                   <img src={src} alt="" loading="lazy" draggable={false} />

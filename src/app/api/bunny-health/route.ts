@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-// export const runtime = 'edge'; // ← Cloudflare OpenNext-тэй нийцэхгүй тул устгасан
+export const runtime = 'edge';
 
 export async function GET() {
   const hasApiKey = !!process.env.BUNNY_STREAM_API_KEY;
@@ -34,3 +34,4 @@ export async function GET() {
         : undefined,
   });
 }
+
