@@ -187,7 +187,22 @@ export async function getBunnyVideo(videoId: string): Promise<BunnyVideoDetail |
 }
 
 export async function getMongolMoviesFromBunny(): Promise<MongolMovie[]> {
-  const videos = await getBunnyVideos({ itemsPerPage: 100 });
+  const itemsPerPage = 100;
+  const maxPages = 50; // safety guard
+
+  let page = 1;
+  const all: BunnyVideoListItem[] = [];
+
+  // Bunny-ийн list API нь page/itemsPerPage-ээр хуудасладаг (ихэвчлэн max 100)
+  // Нийт видеонууд 100-аас их бол бүх хуудсыг дамжиж татна.
+  while (page <= maxPages) {
+    const chunk = await getBunnyVideos({ page, itemsPerPage });
+    all.push(...chunk);
+    if (chunk.length < itemsPerPage) break;
+    page += 1;
+  }
+
+  const videos = all;
   // UI нь categories-ээр grouped; бүх видео "drama" гэж очвол ч ажиллана
   return videos.map(bunnyVideoToMovie);
 }
