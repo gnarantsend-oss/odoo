@@ -31,9 +31,17 @@ export function HeroMosaicLanes({ lanes }: { lanes: readonly HeroLane[] }) {
             {lane.items.map((m, i) => {
               const sz = SIZE_PATTERN[(i + lane.offset * 3) % SIZE_PATTERN.length];
               const src = m.preview || m.poster;
+              const isPriority = ri < 2 && i < 8;
               return (
                 <div key={`${ri}-${i}`} className="ms-card" style={{ width: sz.w, height: lane.rowH }}>
-                  <img src={src} alt="" loading="lazy" draggable={false} />
+                  <img
+                    src={src}
+                    alt=""
+                    loading={isPriority ? 'eager' : 'lazy'}
+                    fetchPriority={isPriority ? 'high' : 'auto'}
+                    decoding="async"
+                    draggable={false}
+                  />
                 </div>
               );
             })}

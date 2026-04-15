@@ -9,9 +9,11 @@ import { useSnapRowDragScroll, useSnapRowObserver } from './useSnapRow';
 export default function SnapRow({
   cat,
   movies,
+  prioritizeImages = false,
 }: {
   cat: { key: string; label: string };
   movies: MongolMovie[];
+  prioritizeImages?: boolean;
 }) {
   const itemIds = useMemo(() => movies.map((m) => m.id), [movies]);
   const { scrollRef, activeId } = useSnapRowObserver({ itemIds });
@@ -87,6 +89,8 @@ export default function SnapRow({
           gap: '10px',
           overflowX: 'auto',
           padding: '14px 4% 20px',
+          contentVisibility: 'auto',
+          containIntrinsicSize: '240px',
           cursor: 'grab',
           userSelect: 'none',
           WebkitUserSelect: 'none',
@@ -94,8 +98,14 @@ export default function SnapRow({
           WebkitOverflowScrolling: 'touch',
         }}
       >
-        {movies.map((m) => (
-          <SnapCard key={m.id} movie={m} isActive={activeId === m.id} dataId={m.id} />
+        {movies.map((m, idx) => (
+          <SnapCard
+            key={m.id}
+            movie={m}
+            isActive={activeId === m.id}
+            dataId={m.id}
+            prioritizeImage={prioritizeImages && idx < 6}
+          />
         ))}
       </div>
     </section>

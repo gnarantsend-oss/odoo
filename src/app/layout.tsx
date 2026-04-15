@@ -43,6 +43,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://vz-e6562a2b-a7e.b-cdn.net" crossOrigin="" />
+        <link rel="dns-prefetch" href="//vz-e6562a2b-a7e.b-cdn.net" />
+        <link rel="preconnect" href="https://video.bunnycdn.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="//video.bunnycdn.com" />
         <script dangerouslySetInnerHTML={{ __html: `
 (function(){
   var VALID=['abyss','crimson','aurora','ember','forest'];

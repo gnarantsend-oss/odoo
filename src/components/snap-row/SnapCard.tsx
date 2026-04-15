@@ -11,10 +11,12 @@ export function SnapCard({
   movie,
   isActive,
   dataId,
+  prioritizeImage = false,
 }: {
   movie: MongolMovie;
   isActive: boolean;
   dataId?: string;
+  prioritizeImage?: boolean;
 }) {
   const [wl, setWl] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -73,7 +75,9 @@ export function SnapCard({
           <img
             src={movie.poster}
             alt={movie.name}
-            loading="lazy"
+            loading={prioritizeImage ? 'eager' : 'lazy'}
+            fetchPriority={prioritizeImage ? 'high' : 'auto'}
+            decoding="async"
             draggable={false}
             style={{
               width: '100%',

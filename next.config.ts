@@ -27,13 +27,6 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Статик Next.js chunk-ууд — 1 жил
-        source: '/_next/static/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
-      },
-      {
         // Нүүр хуудас — 5 минут CDN cache
         source: '/',
         headers: [
