@@ -2,23 +2,27 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { cache } from 'react';
 import type { Metadata } from 'next';
 import { MongolPlayer } from './mongol-player';
 import { signMovieIframes, getBunnyVideo, bunnyVideoToMovie } from '@/lib/bunny';
 
 type Props = { params: Promise<{ id: string }> };
 
-// ── ISR: 30 минут тутам шинэчлэгдэнэ ────────────────────────────────────────
+// ISR: 30 минут — force-dynamic ХАСАВ (тэр нь revalidate-г дарж байсан!)
 // Token 6 цаг хүчинтэй, ISR 30 мин → аюулгүй зай.
-// Regional cache edge-д хадгалагдана, R2 load бага байна.
-// Deploy хийхэд cache устгагддаггүй — ISR автоматаар шинэчилнэ.
-export const revalidate = 1800; // 30 минут
-export const dynamic = 'force-dynamic';
+export const revalidate = 1800;
+
+// React cache() — generateMetadata + page хоёулаа getBunnyVideo дуудна.
+// cache() тул нэг render дотор зөвхөн НЭГ API дуудалт болно.
+const getMovie = cache(async (id: string) => {
+  const v = await getBunnyVideo(id);
+  return v ? bunnyVideoToMovie(v) : null;
+});
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const v = await getBunnyVideo(id);
-  const movie = v ? bunnyVideoToMovie(v) : null;
+  const movie = await getMovie(id);
   if (!movie) return { title: 'Кино олдсонгүй' };
   return {
     title: `${movie.name} — Narhan TV`,
@@ -33,15 +37,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MongolWatchPage({ params }: Props) {
   const { id } = await params;
-  const v = await getBunnyVideo(id);
-  const movie = v ? bunnyVideoToMovie(v) : null;
+  const movie = await getMovie(id);
 
   if (!movie) notFound();
 
   // Server-side дээр 6 цаг хүчинтэй Token-той signed URL үүсгэнэ.
-  // ISR 30 мин тутам шинэ token авна → token 5.5 цаг хүчинтэй үлдэнэ.
   const signedMovie = signMovieIframes(movie, 21600);
-
   const isSerial = !!movie.episodes && movie.episodes.length > 0;
 
   return (

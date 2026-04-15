@@ -3,9 +3,8 @@ import SnapRow from '@/components/snap-row';
 import { CATEGORIES } from '@/lib/types';
 import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
-// Runtime-д server render хийнэ — build үед статик render хийхгүй
-// Cloudflare R2 ISR cache давхаргаар кэшлэгдэнэ
-export const dynamic = 'force-dynamic';
+// 5 минут ISR — force-dynamic хасав
+export const revalidate = 300;
 
 export default async function MongolPage() {
   const MOVIES = await getMongolMoviesFromBunny();
