@@ -10,10 +10,10 @@
     "typecheck": "tsc --noEmit",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
 
-    "deploy": "opennextjs-cloudflare build && bun run clear-cache && opennextjs-cloudflare deploy",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
 
     "ci:build": "opennextjs-cloudflare build",
-    "ci:deploy": "bun run clear-cache && opennextjs-cloudflare deploy",
+    "ci:deploy": "opennextjs-cloudflare deploy",
 
     "pages:build": "opennextjs-cloudflare build",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",

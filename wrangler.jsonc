@@ -32,23 +32,33 @@
     }
   ],
 
-  // ─── ISR Revalidation Queue (Durable Objects) ────────────────────────────
-  // Ижил хуудасны revalidation давхардахгүй болно.
-  // Нэг хүсэлт ирэхэд зөвхөн нэг л background refresh хийнэ.
+  // ─── Durable Objects ─────────────────────────────────────────────────────
+  //
+  // NEXT_CACHE_DO_QUEUE      — ISR revalidation давхардахгүй болно.
+  // NEXT_TAG_CACHE_DO_SHARDED — tag → path харьцааг SQLite-д хадгалдаг.
+  //                            revalidateTag('movies') дуудахад зөвхөн
+  //                            'movies' tag-тай хуудсыг л шинэчилнэ.
+  // NEXT_CACHE_DO_PURGE      — revalidation болоход CF edge cache-г
+  //                            автоматаар цэвэрлэнэ.
   //
   // ⚠️  BUILD WARNING тайлбар:
   //   "no such Durable Object class is exported from the worker"
-  //   → Энэ нь ХЭВИЙН САНУУЛГА. DOQueueHandler-г OpenNext нь
-  //     .open-next/worker.js bundle дотор автоматаар export хийдэг.
-  //     Build үед wrangler тэр bundle-г хараахан уншаагүй учраас
-  //     warning гардаг. Production дээр зөв ажилладаг.
-  //   → workerd-н ирээдүйн хувилбарт startup-time error болвол
-  //     @opennextjs/cloudflare шинэчлэлтийг хянах хэрэгтэй.
+  //   → ХЭВИЙН САНУУЛГА. OpenNext нь .open-next/worker.js bundle дотор
+  //     автоматаар export хийдэг. Production дээр зөв ажилладаг.
+  //
   "durable_objects": {
     "bindings": [
       {
         "name": "NEXT_CACHE_DO_QUEUE",
         "class_name": "DOQueueHandler"
+      },
+      {
+        "name": "NEXT_TAG_CACHE_DO_SHARDED",
+        "class_name": "DOShardedTagCache"
+      },
+      {
+        "name": "NEXT_CACHE_DO_PURGE",
+        "class_name": "BucketCachePurge"
       }
     ]
   },
@@ -56,6 +66,10 @@
     {
       "tag": "v1",
       "new_sqlite_classes": ["DOQueueHandler"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["DOShardedTagCache", "BucketCachePurge"]
     }
   ],
 
