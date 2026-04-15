@@ -19,9 +19,27 @@ function bunnyPreviewWebpUrl(libraryId: string, guid: string) {
 
 function guessCategory(title: string): string {
   const t = title.toLowerCase();
-  if (t.includes('trailer') || t.includes('трейлер')) return 'trailer';
-  if (t.includes('horror') || t.includes('аймшиг')) return 'horror';
-  if (t.includes('comedy') || t.includes('инээдэм')) return 'comedy';
+  if (t.includes('трейлер')    || t.includes('trailer'))     return 'trailer';
+  if (t.includes('аймшиг')     || t.includes('horror'))      return 'horror';
+  if (t.includes('инээдэм')    || t.includes('comedy'))      return 'comedy';
+  if (t.includes('экшн')       || t.includes('action'))      return 'action';
+  if (t.includes('адал явдал') || t.includes('adventure'))   return 'adventure';
+  if (t.includes('анимэйшн')   || t.includes('animation'))   return 'animation';
+  if (t.includes('гэмт хэрэг') || t.includes('crime'))       return 'crime';
+  if (t.includes('баримтат')   || t.includes('documentary')) return 'documentary';
+  if (t.includes('гэр бүл')    || t.includes('family'))      return 'family';
+  if (t.includes('фэнтэзи')    || t.includes('fantasy'))     return 'fantasy';
+  if (t.includes('түүх')       || t.includes('history'))     return 'history';
+  if (t.includes('хөгжим')     || t.includes('music'))       return 'music';
+  if (t.includes('нууц')       || t.includes('mystery'))     return 'mystery';
+  if (t.includes('романтик')   || t.includes('romance'))     return 'romance';
+  if (t.includes('шинжлэх')    || t.includes('scifi')
+                                || t.includes('sci-fi'))      return 'scifi';
+  if (t.includes('триллер')    || t.includes('thriller'))    return 'thriller';
+  if (t.includes('дайн')       || t.includes('war'))         return 'war';
+  if (t.includes('вестерн')    || t.includes('western'))     return 'western';
+  if (t.includes('цуврал')     || t.includes('series'))      return 'series';
+  if (t.includes('+18')        || t.includes('adult'))       return 'adult';
   return 'drama';
 }
 
@@ -36,4 +54,3 @@ export function bunnyVideoToMovie(v: BunnyVideoListItem): MongolMovie {
     iframe: bunnyEmbedUrl(libraryId, v.guid),
   };
 }
-

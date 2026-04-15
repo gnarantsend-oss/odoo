@@ -42,12 +42,11 @@ export default function MongolTab({ movies }: { movies: MongolMovie[] }) {
         <ContinueRow movies={movies} />
         {categories.map((cat, i) => (
           <div key={cat.key}>
-            {BANNERS.length > 0 && BANNERS[i % BANNERS.length] && <BannerBlock banner={BANNERS[i % BANNERS.length]} />}
             <SnapRow cat={cat} movies={movies.filter((m) => m.category === cat.key)} />
+            {BANNERS.length > 0 && BANNERS[i % BANNERS.length] && <BannerBlock banner={BANNERS[i % BANNERS.length]} />}
           </div>
         ))}
       </div>
     </>
   );
 }
-
