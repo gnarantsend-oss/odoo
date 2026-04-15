@@ -4,10 +4,12 @@ import { CATEGORIES } from '@/lib/types';
 import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
 export const revalidate = 300;
-export const dynamic = 'force-dynamic';
 
 export default async function MongolPage() {
-  const MOVIES = await getMongolMoviesFromBunny();
+  const MOVIES = await getMongolMoviesFromBunny().catch((err) => {
+    console.error('[mongol] failed to load bunny movies', err);
+    return [];
+  });
   return (
     <div style={{ minHeight: '100vh', background: '#0b0e1a', color: '#fff' }}>
       <Header />

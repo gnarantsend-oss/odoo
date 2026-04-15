@@ -3,10 +3,12 @@ import MongolTab from '@/components/mongol-tab';
 import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
 export const revalidate = 300;
-export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const movies = await getMongolMoviesFromBunny();
+  const movies = await getMongolMoviesFromBunny().catch((err) => {
+    console.error('[home] failed to load bunny movies', err);
+    return [];
+  });
   return (
     <div style={{ minHeight: '100vh', background: '#0b0e1a' }}>
       <Header />

@@ -13,7 +13,6 @@ type Props = { params: Promise<{ id: string }> };
 // Regional cache edge-д хадгалагдана, R2 load бага байна.
 // Deploy хийхэд cache устгагддаггүй — ISR автоматаар шинэчилнэ.
 export const revalidate = 1800; // 30 минут
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;

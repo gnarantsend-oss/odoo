@@ -1,6 +1,14 @@
 import type { BunnyPaginated, BunnyVideoDetail, BunnyVideoListItem } from './types';
 import { getBunnyApiKey, getBunnyLibraryId } from './env';
 
+const BUNNY_TIMEOUT_MS = 8000;
+
+function withTimeoutSignal(timeoutMs = BUNNY_TIMEOUT_MS): AbortSignal {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(`timeout:${timeoutMs}ms`), timeoutMs);
+  return controller.signal;
+}
+
 export async function getBunnyVideos(opts?: {
   page?: number;
   itemsPerPage?: number;
@@ -30,6 +38,7 @@ export async function getBunnyVideos(opts?: {
   const res = await fetch(url.toString(), {
     headers: { AccessKey: apiKey },
     next: { revalidate: 300, tags: ['movies'] },
+    signal: withTimeoutSignal(),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
@@ -50,6 +59,7 @@ export async function getBunnyVideo(videoId: string): Promise<BunnyVideoDetail |
   const res = await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`, {
     headers: { AccessKey: apiKey },
     next: { revalidate: 1800, tags: [`movie-${videoId}`] },
+    signal: withTimeoutSignal(),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
@@ -61,7 +71,7 @@ export async function getBunnyVideo(videoId: string): Promise<BunnyVideoDetail |
 
 export async function listAllBunnyVideos(): Promise<BunnyVideoListItem[]> {
   const itemsPerPage = 100;
-  const maxPages = 50;
+  const maxPages = 10;
 
   let page = 1;
   const all: BunnyVideoListItem[] = [];
