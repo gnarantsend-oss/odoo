@@ -10,7 +10,10 @@ export async function getBunnyVideos(opts?: {
   const libraryId = getBunnyLibraryId();
   const apiKey = getBunnyApiKey();
   if (!apiKey) {
-    throw new Error('Missing env: BUNNY_STREAM_API_KEY');
+    // Build цагт secret байхгүй — хоосон буцааж build амжилттай болгоно.
+    // Runtime-д Cloudflare Worker secret байгаа тул ажиллана.
+    console.warn('[bunny] BUNNY_STREAM_API_KEY not set; returning empty list');
+    return [];
   }
   if (!process.env.BUNNY_LIBRARY_ID) {
     console.warn('[bunny] BUNNY_LIBRARY_ID not set; using fallback 12345');
