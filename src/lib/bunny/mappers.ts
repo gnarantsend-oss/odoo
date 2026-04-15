@@ -47,7 +47,7 @@ export function bunnyVideoToMovie(v: BunnyVideoListItem): MongolMovie {
   const libraryId = getBunnyLibraryId();
   return {
     id: v.guid,
-    name: v.title,
+    name: v.title.split(' - ')[0].trim(),
     category: guessCategory(v.title),
     poster: bunnyThumbUrl(libraryId, v.guid, v.thumbnailFileName),
     preview: bunnyPreviewWebpUrl(libraryId, v.guid),
