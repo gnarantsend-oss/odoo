@@ -1,9 +1,4 @@
 import { defineCloudflareConfig } from '@opennextjs/cloudflare';
-import r2IncrementalCache from '@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache';
-import { withRegionalCache } from '@opennextjs/cloudflare/overrides/incremental-cache/regional-cache';
-import doShardedTagCache from '@opennextjs/cloudflare/overrides/tag-cache/do-sharded-tag-cache';
-import doQueue from '@opennextjs/cloudflare/overrides/queue/do-queue';
-import { purgeCache } from '@opennextjs/cloudflare/overrides/cache-purge/index';
 
 /**
  * Smart Cache тохиргоо (2026-04-15 шинэчлэл):
@@ -47,14 +42,6 @@ import { purgeCache } from '@opennextjs/cloudflare/overrides/cache-purge/index';
  * ─────────────────────────────────────────────────────────────────────────
  */
 export default defineCloudflareConfig({
-  incrementalCache: withRegionalCache(r2IncrementalCache, {
-    // long-lived: cache-д байвал шууд буцаана, дэвсгэрт R2-с шинэчилнэ
-    mode: 'long-lived',
-  }),
-  queue: doQueue,
-  // Tag-based invalidation: deploy болгонд R2 бүрэн устгахгүй
-  tagCache: doShardedTagCache({ baseShardSize: 12 }),
-  // revalidation болоход edge cache автоматаар цэвэрлэгдэнэ
-  cachePurge: purgeCache({ type: 'direct' }),
-  enableCacheInterception: true,
+  // Keep runtime stable first. If needed, advanced R2/DO cache can be
+  // re-enabled gradually after performance is verified in production.
 });
