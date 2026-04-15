@@ -133,7 +133,14 @@ export async function getBunnyVideos(opts?: {
 }): Promise<BunnyVideoListItem[]> {
   const libraryId = getBunnyLibraryId();
   const apiKey = getBunnyApiKey();
-  if (!apiKey) return [];
+  if (!apiKey) {
+    // Production дээр энэ алдаа гарах ёсгүй — Cloudflare Secrets дээр тохируулна.
+    throw new Error('Missing env: BUNNY_STREAM_API_KEY');
+  }
+  if (!process.env.BUNNY_LIBRARY_ID) {
+    // Түр fallback (12345) нь ихэнхдээ 401/404 үүсгэдэг → алдааг ил гаргана
+    console.warn('[bunny] BUNNY_LIBRARY_ID not set; using fallback 12345');
+  }
 
   const page = opts?.page ?? 1;
   const itemsPerPage = opts?.itemsPerPage ?? 100;
@@ -151,7 +158,11 @@ export async function getBunnyVideos(opts?: {
     // Next.js App Router cache control (SSR/ISR friendly)
     next: { revalidate: 300, tags: ['movies'] },
   });
-  if (!res.ok) return [];
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    console.error('[bunny] list videos failed', res.status, body.slice(0, 300));
+    throw new Error(`Bunny Stream API error (${res.status}) while listing videos`);
+  }
 
   const json = (await res.json()) as BunnyPaginated<BunnyVideoListItem> | BunnyVideoListItem[];
   if (Array.isArray(json)) return json;
@@ -161,13 +172,17 @@ export async function getBunnyVideos(opts?: {
 export async function getBunnyVideo(videoId: string): Promise<BunnyVideoDetail | null> {
   const libraryId = getBunnyLibraryId();
   const apiKey = getBunnyApiKey();
-  if (!apiKey) return null;
+  if (!apiKey) throw new Error('Missing env: BUNNY_STREAM_API_KEY');
 
   const res = await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`, {
     headers: { AccessKey: apiKey },
     next: { revalidate: 1800, tags: [`movie-${videoId}`] },
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    console.error('[bunny] get video failed', res.status, body.slice(0, 300));
+    return null;
+  }
   return (await res.json()) as BunnyVideoDetail;
 }
 
