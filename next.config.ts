@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
         // Нүүр хуудас — 5 минут CDN cache
         source: '/',
         headers: [
-          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=3600' },
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=120' },
         ],
       },
       {

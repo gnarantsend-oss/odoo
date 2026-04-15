@@ -3,8 +3,9 @@ import SnapRow from '@/components/snap-row';
 import { CATEGORIES } from '@/lib/types';
 import { getMongolMoviesFromBunny } from '@/lib/bunny';
 
-export const revalidate = 300;
-export const dynamic = 'force-dynamic';
+// ISR: 1 минут тутам шинэчлэгдэнэ
+// force-dynamic устгасан — revalidate ажиллаж ISR горимд ажиллана
+export const revalidate = 60;
 
 export default async function MongolPage() {
   const MOVIES = await getMongolMoviesFromBunny();
