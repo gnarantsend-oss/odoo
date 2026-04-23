@@ -19,7 +19,11 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     minimumCacheTTL: 31536000,
     remotePatterns: [
-      { protocol: 'https', hostname: 'vz-e6562a2b-a7e.b-cdn.net', pathname: '/**' },
+      {
+        protocol: 'https',
+        hostname: process.env.BUNNY_CDN_HOSTNAME ?? 'vz-fc1e9b28-7da.b-cdn.net',
+        pathname: '/**',
+      },
     ],
   },
 
