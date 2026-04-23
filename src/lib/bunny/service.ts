@@ -3,7 +3,12 @@ import { listAllBunnyVideos } from './api';
 import { bunnyVideoToMovie } from './mappers';
 
 export async function getMongolMoviesFromBunny(): Promise<MongolMovie[]> {
-  const videos = await listAllBunnyVideos();
-  return videos.map(bunnyVideoToMovie);
+  try {
+    const videos = await listAllBunnyVideos();
+    return videos.map(bunnyVideoToMovie);
+  } catch (err) {
+    console.error('[bunny] getMongolMoviesFromBunny failed:', err);
+    return [];
+  }
 }
 
