@@ -1,4 +1,4 @@
-import type { BunnyPaginated, BunnyVideoDetail, BunnyVideoListItem } from './types';
+import type { BunnyCollection, BunnyPaginated, BunnyVideoDetail, BunnyVideoListItem } from './types';
 import { getBunnyApiKey, getBunnyLibraryId } from './env';
 
 export async function getBunnyVideos(opts?: {
@@ -60,6 +60,37 @@ export async function getBunnyVideo(videoId: string): Promise<BunnyVideoDetail |
     return null;
   }
   return (await res.json()) as BunnyVideoDetail;
+}
+
+/**
+ * Bunny Stream-ын бүх коллекцийг (фолдерийг) татаж авна.
+ * Фолдерийн нэр → категори гэж ашиглана.
+ */
+export async function getBunnyCollections(): Promise<BunnyCollection[]> {
+  const libraryId = getBunnyLibraryId();
+  const apiKey = getBunnyApiKey();
+  if (!apiKey) {
+    console.warn('[bunny] BUNNY_STREAM_API_KEY not set; returning empty collections');
+    return [];
+  }
+
+  const url = new URL(`https://video.bunnycdn.com/library/${libraryId}/collections`);
+  url.searchParams.set('page', '1');
+  url.searchParams.set('itemsPerPage', '200');
+
+  const res = await fetch(url.toString(), {
+    headers: { AccessKey: apiKey },
+    next: { revalidate: 3600, tags: ['collections'] },
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    console.error('[bunny] list collections failed', res.status, body.slice(0, 300));
+    return [];
+  }
+
+  const json = (await res.json()) as BunnyPaginated<BunnyCollection> | BunnyCollection[];
+  if (Array.isArray(json)) return json;
+  return json.items ?? [];
 }
 
 export async function listAllBunnyVideos(): Promise<BunnyVideoListItem[]> {
